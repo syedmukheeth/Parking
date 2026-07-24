@@ -1,0 +1,11 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/Windows/.claude//**)",
+      "Read(//c/Users/Windows/.claude/skills//**)",
+      "Read(//c/Users/Windows/.claude/plugins//**)",
+      "Bash(docker --version)",
+      "Bash(git --version)"
+    ]
+  }
+}
