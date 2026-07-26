@@ -3,13 +3,9 @@
   "compilerOptions": {
     "rootDir": "./src",
     "outDir": "./dist",
-    "baseUrl": "./",
     "tsBuildInfoFile": "./dist/.tsbuildinfo",
-    "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
     "declaration": false,
     "declarationMap": false,
-    "strictPropertyInitialization": false,
     "types": ["node"]
   },
   "include": ["src/**/*.ts"],

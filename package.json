@@ -3,17 +3,38 @@
   "version": "0.1.0",
   "private": true,
   "description": "ParkAP - Andhra Pradesh Smart Parking Platform (MVP)",
+  "packageManager": "npm@11.8.0",
+  "engines": {
+    "node": ">=22"
+  },
   "workspaces": [
-    "apps/*"
+    "apps/*",
+    "packages/*"
   ],
   "scripts": {
-    "dev": "concurrently -n api,web -c blue,green \"npm run dev -w @parkap/api\" \"npm run dev -w @parkap/web\"",
+    "dev": "turbo run dev",
     "dev:api": "npm run dev -w @parkap/api",
     "dev:web": "npm run dev -w @parkap/web",
+    "dev:worker": "npm run dev -w @parkap/worker",
+    "build": "turbo run build",
+    "typecheck": "turbo run typecheck",
+    "lint": "turbo run lint",
+    "test": "turbo run test",
+    "format": "prettier --write \"**/*.{ts,tsx,md,json}\"",
+    "format:check": "prettier --check \"**/*.{ts,tsx,md,json}\"",
     "db:setup": "npm run db:setup -w @parkap/api",
-    "build": "npm run build -w @parkap/api && npm run build -w @parkap/web"
+    "db:migrate": "npm run db:migrate -w @parkap/api",
+    "db:reset": "npm run db:reset -w @parkap/api",
+    "db:seed": "npm run db:seed -w @parkap/api",
+    "db:studio": "npm run db:studio -w @parkap/api"
   },
   "devDependencies": {
-    "concurrently": "^9.1.0"
+    "@eslint/js": "^9.18.0",
+    "eslint": "^9.18.0",
+    "eslint-config-prettier": "^10.0.1",
+    "prettier": "^3.4.2",
+    "turbo": "^2.3.3",
+    "typescript": "^5.7.3",
+    "typescript-eslint": "^8.20.0"
   }
 }

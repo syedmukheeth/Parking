@@ -1,0 +1,350 @@
+// ParkAP data model. Read docs/DATA-MODEL.md before changing anything here.
+//
+// Postgres from day one (Neon) in both dev and prod, so the schema uses Postgres
+// natively: real enums, relations, composite indexes. Every enum below is
+// mirrored as a Zod enum in packages/shared so the database and the API boundary
+// enforce the same set.
+//
+// Money is integer paise everywhere. Timestamps are UTC DateTime. Wall-clock
+// daily schedules are "HH:mm" strings — they have no date and no timezone.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+// ─────────────────────────────────────────────────────────────
+// Enums — mirrored in packages/shared/src/enums.ts
+// ─────────────────────────────────────────────────────────────
+
+enum BookingStatus {
+  PENDING
+  CONFIRMED
+  ACTIVE
+  COMPLETED
+  CANCELLED
+  EXPIRED
+}
+
+enum PaymentStatus {
+  CREATED
+  PENDING
+  SUCCESS
+  FAILED
+  REFUNDED
+}
+
+enum VehicleType {
+  CAR
+  BIKE
+  EV_CAR
+  EV_BIKE
+  BUS
+}
+
+enum SlotClass {
+  GENERAL
+  COVERED
+  WOMEN
+  DISABLED
+  EV
+}
+
+enum UserRole {
+  CITIZEN
+  OPERATOR
+  ADMIN
+}
+
+enum LocationStatus {
+  ACTIVE
+  INACTIVE
+  FULL
+}
+
+enum OperatorStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+enum PricingMode {
+  HOURLY
+  DAILY
+  MONTHLY
+}
+
+enum Locale {
+  en
+  te
+}
+
+// ─────────────────────────────────────────────────────────────
+// Identity
+// ─────────────────────────────────────────────────────────────
+
+/// Phone is the identity. Email is optional — a large share of users will not
+/// have one, and requiring it would exclude them.
+model User {
+  id        String   @id @default(cuid())
+  phone     String   @unique
+  name      String?
+  email     String?
+  role      UserRole @default(CITIZEN)
+  locale    Locale   @default(en)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  bookings   Booking[]
+  vehicles   Vehicle[]
+  favourites FavouriteLocation[]
+
+  @@index([createdAt])
+}
+
+model Vehicle {
+  id            String      @id @default(cuid())
+  userId        String
+  vehicleNumber String
+  vehicleType   VehicleType
+  label         String?
+  isDefault     Boolean     @default(false)
+  createdAt     DateTime    @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, vehicleNumber])
+  @@index([userId])
+}
+
+model FavouriteLocation {
+  userId     String
+  locationId String
+  createdAt  DateTime @default(now())
+
+  user     User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location ParkingLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@id([userId, locationId])
+  @@index([locationId])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Supply
+// ─────────────────────────────────────────────────────────────
+
+/// The business running one or more lots. Present from day one even though the
+/// operator dashboard is deferred — retrofitting ownership onto locations later
+/// would touch every query.
+model Operator {
+  id           String         @id @default(cuid())
+  name         String
+  gstin        String?
+  contactPhone String
+  contactEmail String?
+  status       OperatorStatus @default(ACTIVE)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  locations ParkingLocation[]
+}
+
+model ParkingLocation {
+  id           String         @id @default(cuid())
+  operatorId   String
+  name         String
+  address      String
+  city         String
+  district     String
+  pincode      String
+  /// Indexed together — bounding-box prefilter, then Haversine in JS.
+  /// PostGIS is a deliberate later upgrade, not something to adopt at seed scale.
+  lat          Float
+  lng          Float
+  /// Array of URLs. Read whole, never filtered — the moment a field here needs
+  /// querying it becomes a real column.
+  photos       Json           @default("[]")
+  /// Wall-clock daily schedule. "00:00"–"23:59" with is24x7 means round the clock.
+  openTime     String         @default("00:00")
+  closeTime    String         @default("23:59")
+  is24x7       Boolean        @default(false)
+  contactPhone String?
+  status       LocationStatus @default(ACTIVE)
+  createdAt    DateTime       @default(now())
+  updatedAt    DateTime       @updatedAt
+
+  operator   Operator              @relation(fields: [operatorId], references: [id])
+  slotTypes  SlotType[]
+  tags       LocationTag[]
+  bookings   Booking[]
+  snapshots  AvailabilitySnapshot[]
+  favourites FavouriteLocation[]
+
+  @@index([lat, lng])
+  @@index([city, status])
+  @@index([operatorId])
+}
+
+/// A join table rather than a `String[]`, so `?tag=ev_charging` is an indexed
+/// lookup instead of an array scan, and the vocabulary stays a typed union.
+model LocationTag {
+  locationId String
+  /// LocationTag union from @parkap/shared
+  tag        String
+
+  location ParkingLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+
+  @@id([locationId, tag])
+  @@index([tag])
+}
+
+/// Capacity is per vehicle class, not per location. A lot with 100 car slots and
+/// 40 bike slots is two rows. There is deliberately no `totalCapacity` on
+/// ParkingLocation — it would be a denormalisation that drifts.
+model SlotType {
+  id          String      @id @default(cuid())
+  locationId  String
+  vehicleType VehicleType
+  slotClass   SlotClass   @default(GENERAL)
+  capacity    Int
+
+  location     ParkingLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  pricingRules PricingRule[]
+  bookings     Booking[]
+  snapshots    AvailabilitySnapshot[]
+
+  @@unique([locationId, vehicleType, slotClass])
+  @@index([locationId])
+}
+
+/// Resolved by the pricing engine for a requested window. `priority` is what
+/// lets festival and weekend pricing layer over base rates later without a
+/// schema change.
+model PricingRule {
+  id           String      @id @default(cuid())
+  slotTypeId   String
+  mode         PricingMode @default(HOURLY)
+  /// PAISE. Never rupees, never a float.
+  baseAmount   Int
+  freeMinutes  Int         @default(0)
+  /// Bitmask, Monday = bit 0. Null means every day.
+  dayOfWeekMask Int?
+  /// "HH:mm" wall clock. Null means all day.
+  startTime    String?
+  endTime      String?
+  priority     Int         @default(0)
+  validFrom    DateTime?
+  validTo      DateTime?
+
+  slotType SlotType @relation(fields: [slotTypeId], references: [id], onDelete: Cascade)
+
+  @@index([slotTypeId, mode, priority])
+}
+
+// ─────────────────────────────────────────────────────────────
+// Demand
+// ─────────────────────────────────────────────────────────────
+
+model Booking {
+  id            String        @id @default(cuid())
+  userId        String
+  locationId    String
+  slotTypeId    String
+  /// Uppercased, whitespace stripped at write time.
+  vehicleNumber String
+  vehicleType   VehicleType
+  /// UTC. The server clock is authoritative — never a client timestamp.
+  startAt       DateTime
+  endAt         DateTime
+  status        BookingStatus @default(PENDING)
+  /// Paise, locked at quote time.
+  quotedAmount  Int
+  /// Paise, after extensions and overstay.
+  finalAmount   Int?
+  /// Mirrors the cache TTL. The cache is the enforcer; this is for readability
+  /// and for the sweep that expires abandoned bookings.
+  holdExpiresAt DateTime?
+  cancelledAt   DateTime?
+  cancelReason  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  user     User            @relation(fields: [userId], references: [id])
+  location ParkingLocation @relation(fields: [locationId], references: [id])
+  slotType SlotType        @relation(fields: [slotTypeId], references: [id])
+  ticket   Ticket?
+  payments Payment[]
+
+  /// The capacity query. The whole system's throughput rests on this index.
+  @@index([slotTypeId, status, startAt, endAt])
+  @@index([locationId, status, startAt, endAt])
+  @@index([userId, createdAt])
+  @@index([status, holdExpiresAt])
+}
+
+/// Issued on confirmation. `usedAt` is what makes replay detectable —
+/// verification sets it in the same transaction that reads it.
+model Ticket {
+  id           String    @id @default(cuid())
+  bookingId    String    @unique
+  token        String    @unique
+  issuedAt     DateTime  @default(now())
+  expiresAt    DateTime
+  usedAt       DateTime?
+  checkedInAt  DateTime?
+  checkedOutAt DateTime?
+  checkedInBy  String?
+  checkedOutBy String?
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([expiresAt])
+}
+
+model Payment {
+  id                String        @id @default(cuid())
+  bookingId         String
+  /// "mock" | "razorpay"
+  provider          String
+  providerOrderId   String?
+  /// Webhook idempotency key. Gateways retry; a non-idempotent handler
+  /// double-issues tickets.
+  providerPaymentId String?       @unique
+  /// Paise.
+  amount            Int
+  status            PaymentStatus @default(CREATED)
+  /// The provider response, verbatim. Opaque audit trail — when a
+  /// reconciliation dispute arrives months later, derived fields are not enough.
+  rawPayload        Json?
+  paidAt            DateTime?
+  createdAt         DateTime      @default(now())
+  updatedAt         DateTime      @updatedAt
+
+  booking Booking @relation(fields: [bookingId], references: [id], onDelete: Cascade)
+
+  @@index([bookingId])
+  @@index([providerOrderId])
+  @@index([status, createdAt])
+}
+
+/// Periodic occupancy rollup. Never used for booking decisions — it exists so
+/// dashboards get historical charts without re-deriving them from the booking
+/// table, and so the prediction model has training data from day one.
+model AvailabilitySnapshot {
+  id         String   @id @default(cuid())
+  locationId String
+  slotTypeId String
+  capturedAt DateTime @default(now())
+  occupied   Int
+  available  Int
+
+  location ParkingLocation @relation(fields: [locationId], references: [id], onDelete: Cascade)
+  slotType SlotType        @relation(fields: [slotTypeId], references: [id], onDelete: Cascade)
+
+  @@index([locationId, capturedAt])
+  @@index([slotTypeId, capturedAt])
+}

@@ -1,0 +1,33 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-background: #ffffff;
+  --color-foreground: #0b1220;
+  --color-muted: #64748b;
+  --color-brand: #0f766e;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-background: #0b1220;
+    --color-foreground: #e2e8f0;
+    --color-muted: #94a3b8;
+  }
+}
+
+body {
+  background: var(--color-background);
+  color: var(--color-foreground);
+}
+
+/* Every animation in this app must respect this. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
