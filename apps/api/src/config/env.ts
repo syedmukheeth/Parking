@@ -15,13 +15,19 @@ const envSchema = z.object({
 
   DATABASE_URL: z.string().url(),
   DIRECT_URL: z.string().url().optional(),
-  REDIS_URL: z.string().url().optional(),
+  // Upstash Redis, required from day one (holds, OTP challenges, rate limits) —
+  // there is no local-only fallback (docs/ARCHITECTURE.md §7, parkap-devops skill).
+  REDIS_URL: z.string().url(),
 
   API_PORT: z.coerce.number().int().positive().default(4000),
   API_CORS_ORIGINS: csv.default('http://localhost:3000'),
 
   TICKET_TOKEN_SECRET: z.string().min(32, 'TICKET_TOKEN_SECRET must be at least 32 characters'),
   BOOKING_HOLD_TTL_MINUTES: z.coerce.number().int().positive().max(60).default(10),
+
+  // Shared with apps/web. Web signs the session JWT (it owns sessions); the
+  // api only verifies it here — never issues one (docs/CLAUDE.md non-negotiable 7).
+  BETTER_AUTH_SECRET: z.string().min(32, 'BETTER_AUTH_SECRET must be at least 32 characters'),
 
   OTP_PROVIDER: z.enum(['stub', 'msg91', 'twilio']).default('stub'),
   PAYMENT_PROVIDER: z.enum(['mock', 'razorpay']).default('mock'),

@@ -2,6 +2,18 @@ import { z } from 'zod';
 import { bookingStatusSchema } from './enums';
 import { cuidSchema, paiseSchema, utcDateSchema } from './primitives';
 
+/** Embedded in the booking-detail response. Never carries `token` — that only
+ * ever leaves the api via the dedicated QR endpoint. */
+export const ticketSummarySchema = z.object({
+  id: cuidSchema,
+  issuedAt: utcDateSchema,
+  expiresAt: utcDateSchema,
+  usedAt: utcDateSchema.nullable(),
+  checkedInAt: utcDateSchema.nullable(),
+  checkedOutAt: utcDateSchema.nullable(),
+});
+export type TicketSummary = z.infer<typeof ticketSummarySchema>;
+
 export const ticketQrResponseSchema = z.object({
   token: z.string().min(1),
   qrDataUrl: z.string().startsWith('data:image/'),

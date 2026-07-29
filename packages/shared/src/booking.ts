@@ -1,5 +1,6 @@
 import { z } from 'zod';
 import { bookingStatusSchema, vehicleTypeSchema, type BookingStatus } from './enums';
+import { paymentSchema } from './payment';
 import {
   booleanQuerySchema,
   cuidSchema,
@@ -7,6 +8,7 @@ import {
   utcDateSchema,
   vehicleNumberSchema,
 } from './primitives';
+import { ticketSummarySchema } from './ticket';
 
 /**
  * Legal booking transitions, declared as data. The api enforces these in one
@@ -100,6 +102,14 @@ export type CancelBookingRequest = z.infer<typeof cancelBookingRequestSchema>;
  */
 export const extendBookingRequestSchema = z.object({ newEndAt: utcDateSchema });
 export type ExtendBookingRequest = z.infer<typeof extendBookingRequestSchema>;
+
+/** `GET /bookings/:id` — includes the nested payment and ticket
+ * (docs/API-CONTRACT.md). */
+export const bookingDetailSchema = bookingSchema.extend({
+  payment: paymentSchema.nullable(),
+  ticket: ticketSummarySchema.nullable(),
+});
+export type BookingDetail = z.infer<typeof bookingDetailSchema>;
 
 export const listMyBookingsQuerySchema = z.object({
   status: bookingStatusSchema.optional(),

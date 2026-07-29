@@ -7,6 +7,10 @@ const nextConfig: NextConfig = {
   transpilePackages: ['@parkap/shared'],
   eslint: { ignoreDuringBuilds: true },
   typescript: { ignoreBuildErrors: false },
+  // Self-contained server bundle for the Docker runtime stage — copies only
+  // the traced dependency subset, not the whole monorepo node_modules
+  // (docs/ARCHITECTURE.md §2, parkap-devops skill).
+  output: 'standalone',
 };
 
 export default nextConfig;

@@ -1,0 +1,89 @@
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+env:
+  NODE_VERSION: '22'
+
+jobs:
+  typecheck-lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'npm' }
+      - run: npm ci
+      - run: npm run build -w @parkap/shared
+      - run: npx turbo run typecheck
+      - run: npx turbo run lint
+
+  test:
+    runs-on: ubuntu-latest
+    # A local Postgres/Redis service container stands in for the per-PR Neon
+    # branch + Upstash instance the parkap-devops skill describes as the
+    # ideal — swap this job's DATABASE_URL/REDIS_URL for a provisioned Neon
+    # PR branch and Upstash database once those integrations are set up;
+    # transactions/serialization behave the same against either.
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: parkap
+          POSTGRES_PASSWORD: parkap
+          POSTGRES_DB: parkap_test
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+      redis:
+        image: redis:7-alpine
+        ports: ['6379:6379']
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://parkap:parkap@localhost:5432/parkap_test
+      DIRECT_URL: postgresql://parkap:parkap@localhost:5432/parkap_test
+      TEST_DATABASE_URL: postgresql://parkap:parkap@localhost:5432/parkap_test
+      REDIS_URL: redis://localhost:6379
+      TICKET_TOKEN_SECRET: ci-only-secret-not-used-in-prod-000000
+      BETTER_AUTH_SECRET: ci-only-secret-not-used-in-prod-000000
+      NODE_ENV: test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'npm' }
+      - run: npm ci
+      - run: npm run build -w @parkap/shared
+      - run: npx prisma migrate deploy --schema apps/api/prisma/schema.prisma
+      - run: npx turbo run test
+
+  build:
+    needs: [typecheck-lint, test]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'npm' }
+      - run: npm ci
+      - run: npm run build -w @parkap/shared
+      - run: npx prisma generate --schema apps/api/prisma/schema.prisma
+      - run: npx turbo run build
+
+  # Deploy is intentionally left as a stub — it needs Coolify/Dokploy host
+  # secrets (webhook URL, registry credentials) this environment doesn't
+  # have. Fill in the `run` step once those exist; the gate (main branch,
+  # only after build is green) is already correct.
+  deploy:
+    if: github.ref == 'refs/heads/main'
+    needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Wire this up to Coolify/Dokploy once the host and registry secrets exist."

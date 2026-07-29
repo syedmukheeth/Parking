@@ -1,0 +1,38 @@
+# Describes the prod-like topology for Coolify/Dokploy deploy. Local dev does
+# NOT use this — dev runs `npm run dev` natively against a Neon dev branch and
+# Upstash Redis, no local Docker (parkap-devops skill). This is for the
+# hosting platform, not a `docker compose up` dev loop.
+services:
+  api:
+    build:
+      context: .
+      dockerfile: apps/api/Dockerfile
+    env_file: .env
+    ports:
+      - '4000:4000'
+    restart: unless-stopped
+    healthcheck:
+      test: ['CMD', 'wget', '-qO-', 'http://localhost:4000/health']
+      interval: 30s
+      timeout: 5s
+      retries: 3
+
+  worker:
+    build:
+      context: .
+      dockerfile: apps/worker/Dockerfile
+    env_file: .env
+    restart: unless-stopped
+    depends_on:
+      - api
+
+  web:
+    build:
+      context: .
+      dockerfile: apps/web/Dockerfile
+    env_file: .env
+    ports:
+      - '3000:3000'
+    restart: unless-stopped
+    depends_on:
+      - api
