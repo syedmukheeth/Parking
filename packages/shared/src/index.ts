@@ -14,3 +14,4 @@ export * from './booking';
 export * from './payment';
 export * from './ticket';
 export * from './realtime';
+export * from './queues';

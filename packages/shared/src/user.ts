@@ -36,6 +36,18 @@ export const verifyOtpRequestSchema = z.object({
 });
 export type VerifyOtpRequest = z.infer<typeof verifyOtpRequestSchema>;
 
+/**
+ * The session JWT payload. Signed by apps/web (which owns sessions) with
+ * BETTER_AUTH_SECRET; apps/api verifies with the same shared secret and never
+ * issues one itself (docs/ARCHITECTURE.md §6).
+ */
+export const sessionPayloadSchema = z.object({
+  sub: cuidSchema,
+  phone: phoneSchema,
+  role: userRoleSchema,
+});
+export type SessionPayload = z.infer<typeof sessionPayloadSchema>;
+
 export const vehicleSchema = z.object({
   id: cuidSchema,
   vehicleNumber: vehicleNumberSchema,

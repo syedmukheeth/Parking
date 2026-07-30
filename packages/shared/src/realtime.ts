@@ -6,6 +6,9 @@ import { locationAvailabilitySchema } from './location';
 export const REALTIME_NAMESPACE = '/realtime';
 
 export const locationRoom = (locationId: string): string => `location:${locationId}`;
+/** Joined at socket-connect time when a valid session token is presented in
+ * the handshake; used to target `booking:updated` at only that user. */
+export const userRoom = (userId: string): string => `user:${userId}`;
 
 export const subscribeLocationSchema = z.object({ locationId: cuidSchema });
 export type SubscribeLocation = z.infer<typeof subscribeLocationSchema>;

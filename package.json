@@ -12,6 +12,7 @@
     "packages/*"
   ],
   "scripts": {
+    "postinstall": "prisma generate --schema apps/api/prisma/schema.prisma",
     "dev": "turbo run dev",
     "dev:api": "npm run dev -w @parkap/api",
     "dev:web": "npm run dev -w @parkap/web",
