@@ -98,6 +98,17 @@ production configuration.
 Do not "fix" a failed production deploy by relaxing the guard. The fix is to
 implement the real providers.
 
+**Render sets `NODE_ENV=production` by default** on its Node runtime. Set it
+explicitly to `development` on the api service or it will crash on every boot
+with `Refusing to boot: stub providers are active`. Set it on the worker too —
+the worker has no such guard and will happily start either way, so a mismatch
+there is silent, and the two services should agree about what environment they
+are in.
+
+`apps/worker` must be created as a Render **Background Worker**, not a Web
+Service. It binds no port, so a Web Service fails its port scan and the deploy
+is marked failed even though the process started correctly.
+
 ---
 
 ## Release steps
