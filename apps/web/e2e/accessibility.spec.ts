@@ -52,8 +52,12 @@ test.describe('accessibility', () => {
     const background = await page.evaluate(() =>
       getComputedStyle(document.documentElement).getPropertyValue('--background').trim(),
     );
-    // --pk-slate-50, the light canvas.
-    expect(background).toContain('0.985');
+    // --pk-slate-50, the light canvas. A production build minifies the
+    // lightness channel to a percentage — `oklch(98.5% ...)` where the dev
+    // build emits `oklch(0.985 ...)` — so matching the raw string passes
+    // against a dev server and fails against the deployed site, on a value
+    // that never changed. Accept both spellings of the same colour.
+    expect(background).toMatch(/oklch\(\s*(0\.985|98\.5%)/);
 
     const results = await new AxeBuilder({ page })
       .withTags(['wcag2aa', 'wcag21aa'])
