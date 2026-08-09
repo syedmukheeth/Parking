@@ -82,6 +82,14 @@ export const locationSummarySchema = z.object({
 });
 export type LocationSummary = z.infer<typeof locationSummarySchema>;
 
+/**
+ * A favourite is just a location the citizen saved — it reuses the results-card
+ * shape rather than defining a parallel one (CLAUDE.md §9). `priceFrom` and
+ * `availability` carry the same display-only caveats they do in search results.
+ */
+export const favouriteLocationsResponseSchema = z.array(locationSummarySchema);
+export type FavouriteLocationsResponse = z.infer<typeof favouriteLocationsResponseSchema>;
+
 export const pricingRuleSummarySchema = z.object({
   mode: pricingModeSchema,
   baseAmount: paiseSchema,

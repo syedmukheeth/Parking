@@ -158,6 +158,27 @@ components/
 
 Session tokens live in **httpOnly cookies**, never `localStorage` — an XSS in a page with a `localStorage` token is an account takeover.
 
+### Maps: MapLibre + raster tiles, not Google Maps
+
+The roadmap originally named Google Maps for Phase 9, gated on an API key that never arrived. The map now runs on **MapLibre GL** with **CARTO/OSM raster tiles**, which needs no key and unblocked the map-first experience.
+
+Two details worth knowing before changing this:
+
+- **Raster, not vector.** Vector tiles were tried first (OpenFreeMap `bright`). Its stylesheet, sprites and TileJSON all fetch correctly, but no `.pbf` tile is ever requested: MapLibre decodes vector tiles in a Web Worker, and that worker starts and immediately dies under the Next bundler. Markers and sprites keep working because they are main-thread, which makes the failure look like a styling bug rather than a bundling one. Raster tiles decode on the main thread and sidestep it. Revisit vector once the worker bundles correctly; the switch is confined to `features/map/map-config.ts`.
+- **Tiles are an external dependency.** A Content-Security-Policy must allow the tile host in `img-src` and `connect-src`, or the basemap silently goes blank. CARTO's free tier is fine for a pilot; real traffic needs an own tile server or a paid plan.
+
+Availability on a marker follows the same rule as everywhere else: advisory only, never a booking authorisation.
+
+### Demo mode
+
+`DEMO_AUTO_SIGN_IN=true` makes the app open straight into the product as a fixed seeded citizen, with no sign-in screen. It signs a session for `usr_demo_citizen` locally rather than going through the OTP endpoints, which are rate limited per phone number and would otherwise lock the demo out after a few restarts.
+
+It is a **complete authentication bypass** and refuses to run when `NODE_ENV=production`, in the same spirit as the stub-provider boot guard in `apps/api`. Do not weaken that check or enable the flag on a deployment.
+
+### One theme
+
+The product ships light only. The basemap is light in every state, and a dark UI around a light map reads as a bug rather than a theme. The dark ramp values still exist in `globals.css`, so reinstating a dark theme means remapping the semantic slots, not repicking a palette.
+
 Strings are externalised from the first component. Telugu is a launch requirement, not a nice-to-have, and retrofitting i18n across a finished UI costs several times what doing it from the start costs.
 
 ---

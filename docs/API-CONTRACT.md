@@ -305,6 +305,67 @@ Handling is **idempotent by `providerPaymentId`** — gateways retry webhooks, a
 
 ---
 
+## Vehicles
+
+Saved vehicles for the booking picker. Every route is scoped to the session user; a vehicle id from another account resolves to `404 NOT_FOUND`, not `403` — confirming that someone else's id exists is itself a leak.
+
+### `GET /vehicles` 🔒
+
+Default vehicle first, then oldest.
+
+```json
+[
+  { "id": "veh_...", "vehicleNumber": "AP21AB1234", "vehicleType": "CAR", "label": "Home car", "isDefault": true }
+]
+```
+
+### `POST /vehicles` 🔒
+
+```json
+{ "vehicleNumber": "AP21AB1234", "vehicleType": "CAR", "label": "Home car", "isDefault": false }
+```
+
+Returns the vehicle. Two behaviours worth knowing:
+
+- **Upsert, not insert.** Re-posting a plate the citizen already saved updates that row. "You already have this vehicle" is not an error.
+- **The first vehicle becomes the default** regardless of `isDefault`, so a one-vehicle account has something pre-selected at booking time.
+
+`vehicleNumber` is uppercased with whitespace stripped before storage.
+
+### `PATCH /vehicles/:id` 🔒
+
+```json
+{ "label": "Office car", "vehicleType": "EV_CAR", "isDefault": true }
+```
+
+All fields optional. The plate is **not** editable — a vehicle is identified by its registration number; correcting a typo means adding the right plate and deleting the wrong one. Setting `isDefault: true` clears the flag on the citizen's other vehicles in the same transaction.
+
+### `DELETE /vehicles/:id` 🔒
+
+`204`. Past bookings are unaffected — `Booking.vehicleNumber` is a plain column, not a relation.
+
+---
+
+## Favourites
+
+Saved parking locations.
+
+### `GET /favourites` 🔒
+
+Returns `LocationSummary[]` — the same shape as a search result, most recently saved first. `priceFrom` and `availability` carry the same display-only caveats they do in search: never price or authorise a booking from them.
+
+Locations deleted since being favourited are omitted rather than returned as nulls.
+
+### `PUT /favourites/:locationId` 🔒
+
+`204`. Idempotent — saving twice is the same as saving once. An unknown location returns `404 NOT_FOUND`.
+
+### `DELETE /favourites/:locationId` 🔒
+
+`204`. Idempotent — removing something already gone is a success, not a `404`.
+
+---
+
 ## WebSocket
 
 Socket.IO at the API origin, namespace `/realtime`.

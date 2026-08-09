@@ -64,3 +64,16 @@ export const createVehicleRequestSchema = z.object({
   isDefault: z.boolean().default(false),
 });
 export type CreateVehicleRequest = z.infer<typeof createVehicleRequestSchema>;
+
+/**
+ * The plate is not editable — a vehicle *is* its registration number, and
+ * `@@unique([userId, vehicleNumber])` treats it as the identity. Correcting a
+ * typo means adding the right plate and deleting the wrong one.
+ */
+export const updateVehicleRequestSchema = createVehicleRequestSchema
+  .omit({ vehicleNumber: true })
+  .partial();
+export type UpdateVehicleRequest = z.infer<typeof updateVehicleRequestSchema>;
+
+export const vehicleListResponseSchema = z.array(vehicleSchema);
+export type VehicleListResponse = z.infer<typeof vehicleListResponseSchema>;
