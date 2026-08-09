@@ -80,7 +80,9 @@ Global exception filter + typed error codes, Zod on every boundary, correlation-
 ## Phase 14 — Observability & deploy ◐
 Sentry (web/api/worker, SHA-tagged releases, sourcemaps), OpenTelemetry traces web→api→worker→DB, PostHog, `/health` + `/health/ready`. Multi-stage Dockerfiles, GitHub Actions CI (typecheck→lint→test→build→e2e→deploy), `migrate deploy` release step, Coolify deploy from `main`, Neon PR branches in CI.
 **Done when:** the stack deploys via CI to Coolify; traces and errors land in Sentry/OTel.
-◐ — Sentry/OTel bootstrap, health routes, Dockerfiles and the CI pipeline are in place. The deploy job is a stub until Coolify host and registry secrets exist, and Neon PR branches are still a local Postgres service container.
+◐ — Sentry/OTel bootstrap, health routes, Dockerfiles and the CI pipeline are in place. CI now publishes `parkap-api` and `parkap-worker` images to GHCR on every green push to `main`, and the release job applies migrations and pings a deploy webhook when those secrets exist, skipping cleanly when they don't. Topology, environment variables and the first-deploy checklist are written up in [docs/DEPLOYMENT.md](DEPLOYMENT.md).
+
+Still open: no host is actually connected (`DEPLOY_WEBHOOK_URL`, `DATABASE_URL`, `DIRECT_URL` are unset), and Neon PR branches are still a local Postgres service container. A deployment today also runs `NODE_ENV=development`, because the production boot guard correctly refuses a stack whose only OTP and payment providers are the stub and the mock — so the stub OTP's fixed `123456` code is live on any URL deployed this way. Demo-safe, not citizen-safe; the fix is the real providers, not a weaker guard.
 
 ---
 
