@@ -29,8 +29,11 @@ export class TicketsService {
 
   /** Called by apps/worker's ticket-issue job consumer would duplicate this —
    * kept here too so the dev mock-confirm path (no queue round-trip) can
-   * issue a ticket inline for a fast local dev loop. */
-  async issueForBooking(bookingId: string, tx: TxClient) {
+   * issue a ticket inline for a fast local dev loop.
+   *
+   * `tx` is optional: the callers that already own a transaction pass theirs,
+   * and the recovery path in `getQr` has none to give. */
+  async issueForBooking(bookingId: string, tx?: TxClient) {
     const booking = await this.bookingRepo.findByIdRaw(bookingId, tx);
     if (!booking) throw new DomainError('NOT_FOUND', 'Booking not found');
 
@@ -48,7 +51,14 @@ export class TicketsService {
       throw new DomainError('FORBIDDEN', 'You do not have access to this booking');
     }
 
-    const ticket = await this.ticketRepo.findByBookingId(bookingId);
+    // A confirmed booking with no ticket means the issuing step has not landed
+    // yet — the worker is behind, or `JOB_RUNNER=inline` ran it and failed with
+    // no queue to retry it. Issuing here closes both cases. It is idempotent,
+    // so racing the worker produces one ticket, not two.
+    let ticket = await this.ticketRepo.findByBookingId(bookingId);
+    if (!ticket && (booking.status === 'CONFIRMED' || booking.status === 'ACTIVE')) {
+      ticket = await this.issueForBooking(bookingId);
+    }
     if (!ticket) throw new DomainError('NOT_FOUND', 'Ticket has not been issued yet');
 
     const qrDataUrl = await QRCode.toDataURL(ticket.token);

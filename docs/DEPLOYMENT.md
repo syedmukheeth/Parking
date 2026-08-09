@@ -111,6 +111,43 @@ is marked failed even though the process started correctly.
 
 ---
 
+## Running without a worker (`JOB_RUNNER=inline`)
+
+Render has no free tier for background workers, and some hosts have nowhere to
+put a long-running process at all. `JOB_RUNNER=inline` on the api makes it run
+the booking-confirmed work in-process instead of enqueuing it.
+
+Set it on the api service and deploy no worker:
+
+```
+JOB_RUNNER=inline
+```
+
+It works through the existing `JobQueue` seam — a different implementation of
+the same interface — so no service code branches on it and the worker can be
+reattached later by setting `JOB_RUNNER=queue` and deploying `apps/worker`
+again. Nothing else changes.
+
+**What you lose, precisely:**
+
+- **Retries and the dead-letter queue.** BullMQ retried a failed ticket issue
+  and parked it after the final attempt. Inline, a failure is logged once.
+- **The hold sweep.** It was a repeatable job in the worker. Losing it is
+  tolerable and not a correctness bug — the capacity check reads
+  `holdExpiresAt` directly and already ignores expired holds, so an unswept
+  `PENDING` row never blocks a booking. It only means expired reservations sit
+  in the table looking pending until something touches them.
+- **Latency on the confirm request.** Ticket issue now happens inside the
+  payment response rather than after it. It is one insert; it is not slow.
+
+Because there are no retries, `TicketsService.getQr` issues the ticket lazily
+when it finds a confirmed booking without one. That is the recovery path, and
+it is what makes a swallowed inline failure safe rather than a silently
+ticketless booking. It is idempotent, so it cannot race the worker into
+issuing two.
+
+---
+
 ## Release steps
 
 Migrations are a release step, run **before** the new containers start. Never

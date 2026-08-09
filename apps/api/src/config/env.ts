@@ -32,6 +32,19 @@ const envSchema = z.object({
   OTP_PROVIDER: z.enum(['stub', 'msg91', 'twilio']).default('stub'),
   PAYMENT_PROVIDER: z.enum(['mock', 'razorpay']).default('mock'),
 
+  /**
+   * Where post-confirmation work runs.
+   *
+   * `queue` is the design: the api enqueues, apps/worker consumes, and BullMQ
+   * provides retries and a dead-letter queue.
+   *
+   * `inline` runs it in the api process instead, for deployments with nowhere
+   * to host a worker. It is a documented stopgap, not an equal option — there
+   * are no retries and no DLQ, so a failure is logged and the ticket is issued
+   * later, lazily, when the pass is first requested.
+   */
+  JOB_RUNNER: z.enum(['queue', 'inline']).default('queue'),
+
   SENTRY_DSN: z.string().optional(),
   OTEL_EXPORTER_OTLP_ENDPOINT: z.string().optional(),
 });

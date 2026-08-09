@@ -50,6 +50,8 @@ Socket.IO `/realtime`, room per location. Occupancy deltas on booking/ticket eve
 `PaymentProvider` interface, `MockPaymentProvider`, Razorpay-shaped webhook **idempotent by `providerPaymentId`**. Success → `PENDING → CONFIRMED` + enqueues a BullMQ job (ticket issue, notification stub, invoice stub). `apps/worker` consumes with retries + DLQ.
 **Done when:** a booking reaches `CONFIRMED` via a worker job; failure releases the hold.
 
+`JOB_RUNNER=inline` is a **deployment stopgap, not a design change** — it runs the booking-confirmed work in the api process for hosts with nowhere to run a worker (Render charges for background workers). It swaps the `JobQueue` implementation and nothing else, so `JOB_RUNNER=queue` plus a deployed worker restores the intended topology with no code change. It trades away BullMQ's retries, the DLQ and the hold sweep; `TicketsService.getQr` issues a missing ticket lazily to cover the lost retry. Do not build on top of it as though it were the architecture — see [docs/DEPLOYMENT.md](DEPLOYMENT.md).
+
 ## Phase 8 — Web shell ☑
 App Router, Tailwind, shadcn/ui, design tokens, Motion (reduced-motion aware), `lib/api.ts` typed on `@parkap/shared`, `lib/socket.ts`, Better Auth session, TanStack Query where needed, en/te i18n catalogs, loading/error/empty states, PWA manifest, per-route metadata + JSON-LD.
 **Done when:** app boots, calls the api, renders a real seeded location, installable as a PWA.
