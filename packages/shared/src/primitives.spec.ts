@@ -7,7 +7,7 @@ describe('paiseSchema', () => {
     expect(paiseSchema.parse(4000)).toBe(4000);
   });
 
-  it('rejects floats — money is never a float (docs/DATA-MODEL.md)', () => {
+  it('rejects floats - money is never a float (docs/DATA-MODEL.md)', () => {
     expect(paiseSchema.safeParse(40.5).success).toBe(false);
   });
 
@@ -41,7 +41,7 @@ describe('vehicleNumberSchema', () => {
 });
 
 describe('booleanQuerySchema', () => {
-  it('parses the string "false" as false — not JS truthiness', () => {
+  it('parses the string "false" as false - not JS truthiness', () => {
     expect(booleanQuerySchema.parse('false')).toBe(false);
   });
 

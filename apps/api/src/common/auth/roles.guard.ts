@@ -5,7 +5,7 @@ import { DomainError } from '../errors/domain-error';
 import type { AuthenticatedRequest } from './session.guard';
 import { ROLES_KEY } from './roles.decorator';
 
-/** Always pair with SessionGuard — this only reads `request.user`, it never
+/** Always pair with SessionGuard - this only reads `request.user`, it never
  * authenticates. `@UseGuards(SessionGuard, RolesGuard)` in that order. */
 @Injectable()
 export class RolesGuard implements CanActivate {

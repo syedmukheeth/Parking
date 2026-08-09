@@ -8,9 +8,9 @@ import type {
 } from '../payment-provider.interface';
 
 /**
- * Auto-succeeds — unblocks the booking flow without a merchant account. A
+ * Auto-succeeds - unblocks the booking flow without a merchant account. A
  * real booking still only confirms via the webhook/confirm path, which
- * enforces idempotency by `providerPaymentId` regardless of provider — that
+ * enforces idempotency by `providerPaymentId` regardless of provider - that
  * check lives in the service, not here, so swapping to Razorpay later cannot
  * silently drop it (parkap-architecture SOLID §L).
  */
@@ -22,7 +22,7 @@ export class MockPaymentProvider implements PaymentProvider {
   }
 
   verifySignature(): boolean {
-    // No real signature scheme in mock mode — there is nothing to forge
+    // No real signature scheme in mock mode - there is nothing to forge
     // against, since PAYMENT_PROVIDER=mock never runs in production
     // (config/env.ts boot guard).
     return true;

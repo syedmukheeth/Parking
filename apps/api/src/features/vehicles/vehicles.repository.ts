@@ -24,7 +24,7 @@ function toVehicle(row: VehicleRow): Vehicle {
  * All Prisma access for the vehicles feature lives here (parkap-backend skill).
  *
  * Every write that can set `isDefault` runs inside a transaction that first
- * clears the flag on the user's other rows — two vehicles both claiming to be
+ * clears the flag on the user's other rows - two vehicles both claiming to be
  * the default would make the booking form's pre-selection a coin flip.
  *
  * Every by-id operation is scoped by `userId` in the `where` clause rather than
@@ -35,7 +35,7 @@ function toVehicle(row: VehicleRow): Vehicle {
 export class VehiclesRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  /** Default first, then oldest — the order the profile list and the booking
+  /** Default first, then oldest - the order the profile list and the booking
    * picker both render in. */
   async listByUser(userId: string): Promise<Vehicle[]> {
     const rows = await this.prisma.vehicle.findMany({
@@ -52,7 +52,7 @@ export class VehiclesRepository {
 
   /**
    * Upsert on the existing `@@unique([userId, vehicleNumber])`. Re-adding a
-   * plate the citizen already saved updates that row instead of failing —
+   * plate the citizen already saved updates that row instead of failing -
    * "you already have this vehicle" is not an error worth an error code.
    */
   async upsert(userId: string, input: CreateVehicleRequest): Promise<Vehicle> {

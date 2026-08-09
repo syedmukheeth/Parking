@@ -13,7 +13,7 @@ import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { VehiclesService } from './vehicles.service';
 
 /**
- * HTTP only — parse, delegate, serialise. Every route is scoped to the session
+ * HTTP only - parse, delegate, serialise. Every route is scoped to the session
  * user; a vehicle id is never trusted on its own.
  */
 @UseGuards(SessionGuard)

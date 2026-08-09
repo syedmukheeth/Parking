@@ -24,7 +24,7 @@ const SNAP_ORDER: SheetSnap[] = ['full', 'half', 'collapsed'];
  *
  * Deliberately not a modal: a dialog would trap focus and cover the map, and
  * the whole point is that the citizen keeps map context while scanning the
- * list. It is `md:hidden` — desktop uses the side panel instead.
+ * list. It is `md:hidden`, desktop uses the side panel instead.
  *
  * Snapping accounts for velocity, so a quick flick moves a stop even when the
  * finger barely travelled. Without that, the sheet feels stuck.
@@ -78,7 +78,7 @@ export function BottomSheet({
   useEffect(() => {
     if (height > 0) settle(snap);
     // Re-settling on height change keeps the sheet aligned after a rotation.
-    // `snap` is intentionally omitted — including it would re-animate on every
+    // `snap` is intentionally omitted, including it would re-animate on every
     // user-driven snap change, fighting the drag gesture.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [height, settle]);

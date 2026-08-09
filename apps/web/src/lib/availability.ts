@@ -2,7 +2,7 @@
  * The availability triad, in one place.
  *
  * Which band a lot falls into decides its marker colour on the map, its badge
- * in a list, and whether the UI discourages a booking — so the thresholds are
+ * in a list, and whether the UI discourages a booking, so the thresholds are
  * deterministic application logic, not a styling detail scattered across
  * components (CLAUDE.md: business logic stays out of presentation).
  *
@@ -20,7 +20,7 @@ export function availabilityStatus(available: number, total: number): Availabili
   return 'available';
 }
 
-/** Token classes per band. Colour never travels alone — every caller pairs
+/** Token classes per band. Colour never travels alone, every caller pairs
  * these with the count or a word, because roughly 8% of male users cannot
  * separate the green and red by hue. */
 export const AVAILABILITY_CLASSES: Record<AvailabilityStatus, { solid: string; subtle: string }> = {

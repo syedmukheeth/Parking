@@ -2,7 +2,7 @@
 
 **Andhra Pradesh Smart Parking Platform**
 
-ParkAP connects citizens, parking operators, and municipalities into one digital parking network — live availability, advance reservation, QR-gate entry, and digital payment, replacing manual tickets and cash handling.
+ParkAP connects citizens, parking operators, and municipalities into one digital parking network: live availability, advance reservation, QR-gate entry, and digital payment, replacing manual tickets and cash handling.
 
 Built by **Sampeer Studio**.
 
@@ -10,7 +10,7 @@ Built by **Sampeer Studio**.
 
 ## Status
 
-Phase 1 MVP — **Citizen Portal Core**. Not yet production deployed.
+Phase 1 MVP, **Citizen Portal Core**. Not yet production deployed.
 
 | Area | State |
 |---|---|
@@ -27,7 +27,7 @@ See [docs/ROADMAP.md](docs/ROADMAP.md) for the phase breakdown.
 
 ## Quick start
 
-Requires **Node 22+** and cloud accounts on **Neon** (Postgres) and **Upstash** (Redis) — dev runs against managed infra, no local Docker. Create a Neon dev branch and an Upstash database, paste their connection strings into `.env`.
+Requires **Node 22+** and cloud accounts on **Neon** (Postgres) and **Upstash** (Redis): dev runs against managed infra, no local Docker. Create a Neon dev branch and an Upstash database, paste their connection strings into `.env`.
 
 ```bash
 npm install
@@ -69,7 +69,7 @@ NEXT_PUBLIC_MAPS_API_KEY=""  # optional; list view works without it
 SENTRY_DSN=""                # optional in dev
 ```
 
-The API **refuses to boot** with `AUTH_PROVIDER=stub` or `PAYMENT_PROVIDER=mock` when `NODE_ENV=production`. That guard is deliberate — do not remove it.
+The API **refuses to boot** with `AUTH_PROVIDER=stub` or `PAYMENT_PROVIDER=mock` when `NODE_ENV=production`. That guard is deliberate, do not remove it.
 
 ---
 
@@ -77,13 +77,13 @@ The API **refuses to boot** with `AUTH_PROVIDER=stub` or `PAYMENT_PROVIDER=mock`
 
 ```
 apps/
-  web/           Next.js 15 App Router — citizen portal (PWA), owns Better Auth
-  api/           NestJS — REST + Socket.IO, Prisma data layer, verifies sessions
-  worker/        BullMQ workers — notifications, invoices, snapshots, hold-sweeps
+  web/           Next.js 15 App Router: citizen portal (PWA), owns Better Auth
+  api/           NestJS: REST + Socket.IO, Prisma data layer, verifies sessions
+  worker/        BullMQ workers: notifications, invoices, snapshots, hold-sweeps
 packages/
   shared/        Zod schemas + types shared by web, api, worker
 docs/            Architecture, data model, API contract, roadmap
-.claude/skills/  Project skills — enforced architecture/backend/frontend/testing/devops/domain rules
+.claude/skills/  Project skills, enforced architecture/backend/frontend/testing/devops/domain rules
 ```
 
 `packages/shared` is the contract between the two apps. Every status union, DTO, and filter shape is defined there once and imported by both sides. If a type exists in two places, that is a bug.
@@ -111,11 +111,11 @@ docs/            Architecture, data model, API contract, roadmap
 
 ## Tech stack
 
-**Frontend** — Next.js 15, React 19, TypeScript, Tailwind, shadcn/ui, Magic UI, Motion, TanStack Table, React Hook Form + Zod, Better Auth, PWA
-**Backend** — NestJS, Prisma, PostgreSQL (Neon), Redis (Upstash), BullMQ, Socket.IO
-**Ops** — Docker, GitHub Actions, Coolify, Sentry, OpenTelemetry, PostHog
-**Testing** — Vitest, Playwright, MSW
-**Planned integrations** — Razorpay, Google Maps, Novu + React Email + Resend, Firebase push
+**Frontend**: Next.js 15, React 19, TypeScript, Tailwind, shadcn/ui, Magic UI, Motion, TanStack Table, React Hook Form + Zod, Better Auth, PWA
+**Backend**: NestJS, Prisma, PostgreSQL (Neon), Redis (Upstash), BullMQ, Socket.IO
+**Ops**: Docker, GitHub Actions, Coolify, Sentry, OpenTelemetry, PostHog
+**Testing**: Vitest, Playwright, MSW
+**Planned integrations**: Razorpay, Google Maps, Novu + React Email + Resend, Firebase push
 
 ---
 

@@ -16,7 +16,7 @@ function toError<T>(error: unknown): ActionResult<T> {
 }
 
 /**
- * Validated here as well as in the api — the client-side parse gives the
+ * Validated here as well as in the api - the client-side parse gives the
  * citizen a plate-format message without a round trip, and the api still
  * re-validates because the client can be bypassed (CLAUDE.md frontend rules).
  */

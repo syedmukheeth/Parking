@@ -23,7 +23,7 @@ import { SessionGuard } from '../../common/auth/session.guard';
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { BookingsService } from './bookings.service';
 
-/** HTTP only — parse, delegate, serialise. No logic here. */
+/** HTTP only - parse, delegate, serialise. No logic here. */
 @Controller('bookings')
 @UseGuards(SessionGuard)
 export class BookingsController {

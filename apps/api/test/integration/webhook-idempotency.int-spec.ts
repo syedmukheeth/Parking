@@ -67,7 +67,7 @@ describe.skipIf(!hasTestDatabase)('payment webhook idempotency', () => {
     };
 
     await bookingsService.handlePaymentWebhook(webhook);
-    await bookingsService.handlePaymentWebhook(webhook); // replay — same providerPaymentId
+    await bookingsService.handlePaymentWebhook(webhook); // replay - same providerPaymentId
 
     const finalBooking = await prisma.booking.findUniqueOrThrow({ where: { id: booking.id } });
     const finalPayment = await prisma.payment.findUniqueOrThrow({ where: { id: payment.id } });
@@ -75,7 +75,7 @@ describe.skipIf(!hasTestDatabase)('payment webhook idempotency', () => {
     expect(finalBooking.status).toBe('CONFIRMED');
     expect(finalPayment.status).toBe('SUCCESS');
     expect(finalPayment.providerPaymentId).toBe('pay_test_replayed_1');
-    // Not double-enqueued — the second call short-circuits on the
+    // Not double-enqueued - the second call short-circuits on the
     // already-processed providerPaymentId before reaching the queue.
     expect(enqueue).toHaveBeenCalledTimes(1);
   });

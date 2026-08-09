@@ -14,7 +14,7 @@ export const subscribeLocationSchema = z.object({ locationId: cuidSchema });
 export type SubscribeLocation = z.infer<typeof subscribeLocationSchema>;
 
 /**
- * Snapshot is computed from the database and REPLACES local state — that is how
+ * Snapshot is computed from the database and REPLACES local state - that is how
  * cache drift self-heals. Deltas are advisory; never gate a booking on one.
  */
 export const availabilitySnapshotEventSchema = locationAvailabilitySchema;

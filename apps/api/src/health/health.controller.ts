@@ -10,13 +10,13 @@ export class HealthController {
     private readonly cache: RedisCacheStore,
   ) {}
 
-  /** Liveness — the process is up. */
+  /** Liveness - the process is up. */
   @Get()
   live(): { status: 'ok'; uptimeSeconds: number } {
     return { status: 'ok', uptimeSeconds: Math.floor(process.uptime()) };
   }
 
-  /** Readiness — dependencies are reachable. */
+  /** Readiness - dependencies are reachable. */
   @Get('ready')
   async ready(@Res() res: Response): Promise<void> {
     const checks: Record<string, 'ok' | 'error'> = { postgres: 'ok', redis: 'ok' };

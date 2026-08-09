@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /**
- * Client-visible config. Only `NEXT_PUBLIC_*` belongs here — anything secret
+ * Client-visible config. Only `NEXT_PUBLIC_*` belongs here, anything secret
  * (BETTER_AUTH_SECRET, provider keys) is read server-side, never bundled.
  *
  * Next inlines `process.env.NEXT_PUBLIC_*` at build time only when referenced

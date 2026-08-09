@@ -66,7 +66,7 @@ export const createVehicleRequestSchema = z.object({
 export type CreateVehicleRequest = z.infer<typeof createVehicleRequestSchema>;
 
 /**
- * The plate is not editable — a vehicle *is* its registration number, and
+ * The plate is not editable - a vehicle *is* its registration number, and
  * `@@unique([userId, vehicleNumber])` treats it as the identity. Correcting a
  * typo means adding the right plate and deleting the wrong one.
  */

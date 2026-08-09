@@ -27,7 +27,7 @@ cause.
    once and killed.
 2. **Socket.IO cannot live in a serverless function.** `RealtimeGateway` holds
    open connections. Functions are killed between requests, so live
-   availability would silently never arrive — the UI would look fine and be
+   availability would silently never arrive, the UI would look fine and be
    wrong, which is worse than an error.
 3. **The worker has nowhere to run.** `PENDING → CONFIRMED` happens in a
    BullMQ job. With no worker, every booking stalls at `PENDING` and every
@@ -50,7 +50,7 @@ subset.
 | `NODE_ENV` | See [the stub-provider guard](#the-stub-provider-guard) below. Not baked into the image. |
 | `DATABASE_URL` | Neon **pooled** connection string. |
 | `DIRECT_URL` | Neon **unpooled**. Used by `prisma migrate`, not by the running app. |
-| `REDIS_URL` | Upstash. `rediss://` — TLS. |
+| `REDIS_URL` | Upstash. `rediss://`: TLS. |
 | `API_CORS_ORIGINS` | Must include the deployed web origin, e.g. `https://parkap.vercel.app`. Comma-separated. Getting this wrong shows as every api call failing from the browser and working from curl. |
 | `TICKET_TOKEN_SECRET` | ≥32 chars. **Must be byte-identical to the worker's.** The api signs QR tokens, the worker verifies them. |
 | `BETTER_AUTH_SECRET` | ≥32 chars. Must match the web app's. |
@@ -69,7 +69,7 @@ the api's), `WORKER_CONCURRENCY` (optional, defaults to 5), `SENTRY_DSN`.
 
 | Variable | Notes |
 |---|---|
-| `NEXT_PUBLIC_API_URL` | `https://<api-host>` — no trailing slash. |
+| `NEXT_PUBLIC_API_URL` | `https://<api-host>`, no trailing slash. |
 | `NEXT_PUBLIC_SOCKET_URL` | Same origin as the api. |
 | `BETTER_AUTH_SECRET` | Matches the api's. |
 | `BETTER_AUTH_URL` | The deployed web origin. |
@@ -84,7 +84,7 @@ redeploy, not a restart.
 
 `apps/api/src/config/env.ts` throws on boot when `NODE_ENV=production` while
 `OTP_PROVIDER=stub` or `PAYMENT_PROVIDER=mock`. Only the stub and mock
-implementations exist today — `msg91`, `twilio` and `razorpay` are accepted
+implementations exist today: `msg91`, `twilio` and `razorpay` are accepted
 enum values with no provider behind them yet (Proposal Phase 2 in
 [ROADMAP.md](ROADMAP.md)).
 
@@ -100,7 +100,7 @@ implement the real providers.
 
 **Render sets `NODE_ENV=production` by default** on its Node runtime. Set it
 explicitly to `development` on the api service or it will crash on every boot
-with `Refusing to boot: stub providers are active`. Set it on the worker too —
+with `Refusing to boot: stub providers are active`. Set it on the worker too:
 the worker has no such guard and will happily start either way, so a mismatch
 there is silent, and the two services should agree about what environment they
 are in.
@@ -123,8 +123,8 @@ Set it on the api service and deploy no worker:
 JOB_RUNNER=inline
 ```
 
-It works through the existing `JobQueue` seam — a different implementation of
-the same interface — so no service code branches on it and the worker can be
+It works through the existing `JobQueue` seam, a different implementation of
+the same interface, so no service code branches on it and the worker can be
 reattached later by setting `JOB_RUNNER=queue` and deploying `apps/worker`
 again. Nothing else changes.
 
@@ -133,7 +133,7 @@ again. Nothing else changes.
 - **Retries and the dead-letter queue.** BullMQ retried a failed ticket issue
   and parked it after the final attempt. Inline, a failure is logged once.
 - **The hold sweep.** It was a repeatable job in the worker. Losing it is
-  tolerable and not a correctness bug — the capacity check reads
+  tolerable and not a correctness bug, the capacity check reads
   `holdExpiresAt` directly and already ignores expired holds, so an unswept
   `PENDING` row never blocks a booking. It only means expired reservations sit
   in the table looking pending until something touches them.
@@ -157,7 +157,7 @@ Migrations are a release step, run **before** the new containers start. Never
 npx prisma migrate deploy --schema apps/api/prisma/schema.prisma
 ```
 
-`DIRECT_URL` must be set for that command — Neon's pooled endpoint cannot run
+`DIRECT_URL` must be set for that command: Neon's pooled endpoint cannot run
 migrations.
 
 Seeding is separate and manual. It is idempotent, but it is not part of a
@@ -171,7 +171,7 @@ npm run db:seed
 
 CI builds and pushes `ghcr.io/<owner>/parkap-api` and `parkap-worker` on every
 green push to `main` (`.github/workflows/ci.yml`). Point the container host at
-those tags, or let the host build from the Dockerfiles directly — both work,
+those tags, or let the host build from the Dockerfiles directly: both work,
 the images just make deploys faster and reproducible.
 
 Build locally with the repo root as context; npm workspaces need the whole tree
@@ -185,8 +185,8 @@ docker build -f apps/api/Dockerfile -t parkap-api .
 
 ## Health checks
 
-`GET /health` — liveness, no dependencies touched.
-`GET /health/ready` — readiness, checks Postgres and Redis.
+`GET /health`: liveness, no dependencies touched.
+`GET /health/ready`: readiness, checks Postgres and Redis.
 
 Point the platform's health check at `/health`. Using `/health/ready` for
 liveness means a brief Redis blip restarts a healthy container.
@@ -202,4 +202,4 @@ liveness means a brief Redis blip restarts a healthy container.
 5. `API_CORS_ORIGINS` includes the web origin.
 6. Web deployed to Vercel with `NEXT_PUBLIC_API_URL` pointing at the api.
 7. Search returns seeded lots in the browser, and a booking reaches
-   `CONFIRMED` — which proves the worker is actually consuming.
+   `CONFIRMED`, which proves the worker is actually consuming.

@@ -121,7 +121,7 @@ function toPayment(row: PaymentRow): PaymentDto {
  * Owns the booking lifecycle end to end: quote, reserve (+ open a payment
  * order), cancel, extend, and confirming/failing from a payment outcome. This
  * is the one place that imports both BookingRepository (own) and
- * PaymentRepository/PaymentsService (imported from PaymentsModule) — a
+ * PaymentRepository/PaymentsService (imported from PaymentsModule) - a
  * one-way dependency that keeps the module graph acyclic (payments knows
  * nothing about bookings).
  */
@@ -222,7 +222,7 @@ export class BookingsService {
       }
     }
 
-    // Unreachable — the loop above always returns or throws — but keeps TS
+    // Unreachable, the loop above always returns or throws, but keeps TS
     // satisfied that every path returns.
     throw new DomainError('SLOT_UNAVAILABLE', 'Could not complete the reservation, please try again');
   }
@@ -233,7 +233,7 @@ export class BookingsService {
     // Only the owner or an ADMIN may view a booking's detail. There is no
     // location->operator->user linkage in this slice, so OPERATOR is
     // deliberately NOT granted blanket access here (that would let any
-    // operator read any citizen's booking) — operators only get scoped
+    // operator read any citizen's booking) - operators only get scoped
     // check-in/check-out actions via the tickets feature.
     if (booking.userId !== userId && role !== 'ADMIN') {
       throw new DomainError('FORBIDDEN', 'You do not have access to this booking');
@@ -289,7 +289,7 @@ export class BookingsService {
           }
 
           const now = new Date();
-          // Re-checks capacity for the ADDED interval only — extension can
+          // Re-checks capacity for the ADDED interval only - extension can
           // legitimately fail here; that's a normal outcome, not an error state
           // (docs/API-CONTRACT.md).
           const occupied = await this.repo.countOverlapping(
@@ -328,7 +328,7 @@ export class BookingsService {
     throw new DomainError('SLOT_UNAVAILABLE', 'Could not complete the extension, please try again');
   }
 
-  /** Dev-only shortcut — registered only when PAYMENT_PROVIDER=mock
+  /** Dev-only shortcut - registered only when PAYMENT_PROVIDER=mock
    * (docs/API-CONTRACT.md). Idempotent: calling it again on an already-SUCCESS
    * payment is a no-op. Called from the citizen's own browser (unlike the
    * webhook, which is server-to-server and unauthenticated), so it still
@@ -360,7 +360,7 @@ export class BookingsService {
       };
     });
 
-    // Enqueued/published after the transaction commits — neither a job nor a
+    // Enqueued/published after the transaction commits - neither a job nor a
     // socket emit should depend on a transaction that could still be in
     // flight (docs/ARCHITECTURE.md §2).
     if (confirmed) {
@@ -372,7 +372,7 @@ export class BookingsService {
   }
 
   /** Public webhook, shaped like Razorpay's. Idempotent by `providerPaymentId`
-   * — gateways retry, and a non-idempotent handler would double-issue tickets
+   * - gateways retry, and a non-idempotent handler would double-issue tickets
    * (docs/API-CONTRACT.md). */
   async handlePaymentWebhook(body: PaymentWebhook): Promise<{ ok: true }> {
     const entity = body.payload.payment.entity;
@@ -408,7 +408,7 @@ export class BookingsService {
     const booking = await this.repo.findByIdRaw(bookingId, tx);
     if (!booking) throw new DomainError('NOT_FOUND', 'Booking not found');
     if (booking.status !== 'PENDING') {
-      // Already confirmed by a racing confirm/webhook call — idempotent no-op.
+      // Already confirmed by a racing confirm/webhook call - idempotent no-op.
       return booking as BookingRow;
     }
     assertTransition(booking.status, 'CONFIRMED');

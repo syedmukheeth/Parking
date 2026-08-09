@@ -6,7 +6,7 @@ import { PAYMENT_PROVIDER, type PaymentProvider } from './payment-provider.inter
 import { PaymentRepository } from './payment.repository';
 
 /**
- * Row-level payment operations only — no knowledge of Booking at all, so this
+ * Row-level payment operations only - no knowledge of Booking at all, so this
  * stays a clean leaf module. The cross-cutting "payment success confirms a
  * booking" orchestration lives in BookingsService, which owns the Booking
  * transaction and imports these primitives (one-way dependency, no cycle).

@@ -9,7 +9,7 @@ import { BookingsService } from './bookings.service';
 
 @Module({
   imports: [PaymentsModule, RealtimeModule],
-  // PaymentsController lives here, not in PaymentsModule — see its file
+  // PaymentsController lives here, not in PaymentsModule - see its file
   // comment for why (keeps the module graph one-way, no forwardRef cycle).
   controllers: [BookingsController, PaymentsController],
   providers: [BookingsService, BookingRepository, BookingHoldStore],

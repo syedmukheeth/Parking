@@ -9,7 +9,7 @@ const SECRET = 'worker-spec-secret-not-used-in-prod';
  * comment there). The risk that duplication carries is drift: a token the
  * worker issues must still verify under the api's `verifyTicketTokenSignature`.
  * These specs pin the wire format from the worker's side without importing
- * across the app boundary — the signature is recomputed independently here, so
+ * across the app boundary - the signature is recomputed independently here, so
  * a change to either implementation breaks this test rather than production.
  */
 describe('generateTicketToken', () => {

@@ -1,7 +1,7 @@
 /**
  * The only place in the app allowed to hold colour literals.
  *
- * Browser chrome — the `theme-color` meta tag and the PWA manifest — is read
+ * Browser chrome, the `theme-color` meta tag and the PWA manifest, is read
  * by the OS before any stylesheet is parsed, so it cannot reference a CSS
  * custom property. These four values are therefore unavoidable hex, and they
  * live here so a palette change updates one file instead of drifting apart

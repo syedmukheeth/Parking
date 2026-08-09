@@ -33,7 +33,7 @@ How ParkAP is put together, and why.
          └────────────────────────────┘
 ```
 
-One API serves every client. The citizen portal is the first consumer; the operator dashboard, staff app, and municipal dashboard are additional consumers of the same core, with role-gated routes. This is why RBAC exists from day one even though only citizen routes are built — adding the operator dashboard later must not require re-plumbing auth.
+One API serves every client. The citizen portal is the first consumer; the operator dashboard, staff app, and municipal dashboard are additional consumers of the same core, with role-gated routes. This is why RBAC exists from day one even though only citizen routes are built, adding the operator dashboard later must not require re-plumbing auth.
 
 ---
 
@@ -44,11 +44,11 @@ npm workspaces, three packages.
 ```
 apps/web        Next.js. Presentation + Better Auth (owns sessions). No business logic, no direct DB.
 apps/api        NestJS. Owns all business rules and all database access. Verifies sessions.
-apps/worker     BullMQ workers. Background jobs — notifications, invoices, snapshots, hold-sweeps.
+apps/worker     BullMQ workers. Background jobs: notifications, invoices, snapshots, hold-sweeps.
 packages/shared Zod schemas + types. Imported by all three. Owns nothing at runtime.
 ```
 
-**`packages/shared` is the contract.** Status unions, request/response DTOs, filter shapes, and error codes are declared once there. The API validates inbound requests against those Zod schemas; the web client types its fetches against the same ones. When the shape changes, both sides fail to compile together — which is the point.
+**`packages/shared` is the contract.** Status unions, request/response DTOs, filter shapes, and error codes are declared once there. The API validates inbound requests against those Zod schemas; the web client types its fetches against the same ones. When the shape changes, both sides fail to compile together, which is the point.
 
 A type defined in two places is a bug, not a duplication.
 
@@ -59,7 +59,7 @@ A type defined in two places is a bug, not a duplication.
 | Module | Responsibility |
 |---|---|
 | `common/` | Exception filter, validation pipe, logging interceptor, `CacheStore`, guards |
-| `prisma/` | `PrismaService` — the only place a Prisma client is instantiated |
+| `prisma/` | `PrismaService`, the only place a Prisma client is instantiated |
 | `auth/` | OTP request/verify, JWT issue/refresh, `JwtAuthGuard`, `RolesGuard` |
 | `locations/` | Search with geo + filters, detail, availability |
 | `bookings/` | Quote, reserve, cancel, extend. State machine. Pricing engine. |
@@ -68,7 +68,7 @@ A type defined in two places is a bug, not a duplication.
 | `realtime/` | Socket.IO gateway, per-location rooms, occupancy deltas |
 
 Rules:
-- Controllers do HTTP only — parse, delegate, serialise. No logic.
+- Controllers do HTTP only: parse, delegate, serialise. No logic.
 - Services own the rules. A service may call another service; it never calls another module's controller.
 - Only `PrismaService` touches the database. No raw client instantiation anywhere else.
 
@@ -90,11 +90,11 @@ This is the heart of the product. Everything else is presentation around it.
               EXPIRED                            CANCELLED
 ```
 
-**Hold.** When a citizen starts a reservation, a short-TTL hold is written to `CacheStore` for that location and time window. The hold prevents a second citizen from taking the last slot while the first is inside the payment flow. If payment does not complete before the TTL, the hold evaporates and the booking becomes `EXPIRED`. No cleanup job required for the hold itself — TTL does the work.
+**Hold.** When a citizen starts a reservation, a short-TTL hold is written to `CacheStore` for that location and time window. The hold prevents a second citizen from taking the last slot while the first is inside the payment flow. If payment does not complete before the TTL, the hold evaporates and the booking becomes `EXPIRED`. No cleanup job required for the hold itself: TTL does the work.
 
 **Capacity check.** Inside a Prisma transaction, the service counts confirmed bookings whose time window overlaps the requested one, adds active holds, and compares against the slot-type capacity. This single query is the correctness core of the system. It is the one piece with a dedicated concurrency test: N simultaneous attempts on the last slot must produce exactly one confirmation.
 
-**Extend** re-quotes for the extended window and re-runs the capacity check for the *added* interval only. An extension can legitimately fail because the slot is booked by someone else later — the UI must handle that, not assume success.
+**Extend** re-quotes for the extended window and re-runs the capacity check for the *added* interval only. An extension can legitimately fail because the slot is booked by someone else later: the UI must handle that, not assume success.
 
 ---
 
@@ -102,10 +102,10 @@ This is the heart of the product. Everything else is presentation around it.
 
 Availability has two representations, deliberately:
 
-- **Source of truth** — the database. Derived by counting bookings. Always correct, comparatively slow.
-- **Live counter** — `CacheStore`. Fast, pushed over WebSocket, may drift.
+- **Source of truth**: the database. Derived by counting bookings. Always correct, comparatively slow.
+- **Live counter**: `CacheStore`. Fast, pushed over WebSocket, may drift.
 
-Clients subscribe to a room per location id. Booking confirmations, cancellations, check-ins, and check-outs emit occupancy deltas into the room. On socket connect or reconnect, the client receives a fresh snapshot computed from the database — so drift self-heals rather than accumulating.
+Clients subscribe to a room per location id. Booking confirmations, cancellations, check-ins, and check-outs emit occupancy deltas into the room. On socket connect or reconnect, the client receives a fresh snapshot computed from the database, so drift self-heals rather than accumulating.
 
 The rule: **never make a booking decision from the cached counter.** It informs the UI. The transactional capacity check decides.
 
@@ -117,11 +117,11 @@ Three seams where a stub stands in for a real service. Each is an interface with
 
 | Seam | Interface | Dev | Production |
 |---|---|---|---|
-| OTP delivery | `OtpProvider` | `StubOtpProvider` — accepts `123456` | MSG91 / Twilio |
-| Payments | `PaymentProvider` | `MockPaymentProvider` — auto-succeeds | Razorpay |
+| OTP delivery | `OtpProvider` | `StubOtpProvider`, accepts `123456` | MSG91 / Twilio |
+| Payments | `PaymentProvider` | `MockPaymentProvider`, auto-succeeds | Razorpay |
 | Cache / holds | `CacheStore` | Upstash Redis (day one) | Upstash Redis |
 
-Each interface is defined by what the *domain* needs, not by the vendor's SDK shape — otherwise the interface leaks the vendor and the swap fails. `PaymentProvider` exposes `createOrder`, `verifySignature`, and `getStatus`; the mock webhook payload is shaped like Razorpay's so the real adapter is a new file rather than a refactor of the booking service.
+Each interface is defined by what the *domain* needs, not by the vendor's SDK shape: otherwise the interface leaks the vendor and the swap fails. `PaymentProvider` exposes `createOrder`, `verifySignature`, and `getStatus`; the mock webhook payload is shaped like Razorpay's so the real adapter is a new file rather than a refactor of the booking service.
 
 **Safety guard:** the API throws on boot if a stub provider is selected while `NODE_ENV=production`. Shipping the fixed OTP code to production would be a full authentication bypass. The guard is not optional.
 
@@ -129,7 +129,7 @@ Each interface is defined by what the *domain* needs, not by the vendor's SDK sh
 
 ## 7. Data layer
 
-Prisma against **PostgreSQL (Neon)** in both dev and prod — a Neon dev branch locally, main in prod. No SQLite step, so the schema uses Postgres natively: real `enum`s, relations, `@@index`, `@db` types. Every enum is mirrored as a Zod enum in `packages/shared` so the DB and the API boundary enforce the same set. Full detail in [DATA-MODEL.md](DATA-MODEL.md).
+Prisma against **PostgreSQL (Neon)** in both dev and prod: a Neon dev branch locally, main in prod. No SQLite step, so the schema uses Postgres natively: real `enum`s, relations, `@@index`, `@db` types. Every enum is mirrored as a Zod enum in `packages/shared` so the DB and the API boundary enforce the same set. Full detail in [DATA-MODEL.md](DATA-MODEL.md).
 
 Schema changes ship as committed `prisma migrate` migrations; CI runs `migrate deploy` on per-PR Neon branches and fails on drift.
 
@@ -156,7 +156,7 @@ lib/
 components/
 ```
 
-Session tokens live in **httpOnly cookies**, never `localStorage` — an XSS in a page with a `localStorage` token is an account takeover.
+Session tokens live in **httpOnly cookies**, never `localStorage`, an XSS in a page with a `localStorage` token is an account takeover.
 
 ### Maps: MapLibre + raster tiles, not Google Maps
 

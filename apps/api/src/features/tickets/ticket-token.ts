@@ -7,7 +7,7 @@ import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
  * and set in one transaction (`TicketsService.verify`).
  *
  * NOTE: apps/worker duplicates this file (`apps/worker/src/tickets/ticket-token.ts`)
- * rather than importing it — the two apps are independently deployed
+ * rather than importing it - the two apps are independently deployed
  * processes with no shared server-only package, and a ~20-line pure crypto
  * function doesn't justify introducing one for this MVP slice.
  */
@@ -23,7 +23,7 @@ export function verifyTicketTokenSignature(token: string, secret: string): boole
   if (parts.length !== 3) return false;
   const [bookingId, nonce, signature] = parts;
   // `noUncheckedIndexedAccess` means destructuring can't be narrowed by the
-  // length check above — this makes the tuple's shape explicit rather than
+  // length check above - this makes the tuple's shape explicit rather than
   // asserting past it.
   if (bookingId === undefined || nonce === undefined || signature === undefined) return false;
   const expected = createHmac('sha256', secret).update(`${bookingId}.${nonce}`).digest('base64url');

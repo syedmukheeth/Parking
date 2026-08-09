@@ -1,10 +1,10 @@
 # API Contract
 
-REST and WebSocket surface of the ParkAP API. Every request and response shape here has a matching Zod schema in `packages/shared` — that package is the source of truth, this document is the readable version of it.
+REST and WebSocket surface of the ParkAP API. Every request and response shape here has a matching Zod schema in `packages/shared` - that package is the source of truth, this document is the readable version of it.
 
 **Base URL (dev):** `http://localhost:4000`
 **Content type:** `application/json`
-**Auth:** Better Auth session — httpOnly cookie from the browser; the web server forwards the verified session token to the api on protected routes. The api verifies, never issues.
+**Auth:** Better Auth session - httpOnly cookie from the browser; the web server forwards the verified session token to the api on protected routes. The api verifies, never issues.
 
 ---
 
@@ -30,7 +30,7 @@ Success responses return the payload directly. Errors always take this shape:
 }
 ```
 
-`code` is a stable machine-readable string — clients branch on it. `message` is human-readable and may change. Stack traces are never returned.
+`code` is a stable machine-readable string - clients branch on it. `message` is human-readable and may change. Stack traces are never returned.
 
 ### Error codes
 
@@ -55,7 +55,7 @@ Success responses return the payload directly. Errors always take this shape:
 
 ## Auth
 
-Auth is owned by **Better Auth in `apps/web`**, not by NestJS. The phone-OTP sign-in and session issuance happen on the web side; the session lives in an **httpOnly cookie**. `apps/api` receives the forwarded session token, verifies it in a `SessionGuard`, and applies RBAC — it does not issue or refresh sessions itself.
+Auth is owned by **Better Auth in `apps/web`**, not by NestJS. The phone-OTP sign-in and session issuance happen on the web side; the session lives in an **httpOnly cookie**. `apps/api` receives the forwarded session token, verifies it in a `SessionGuard`, and applies RBAC - it does not issue or refresh sessions itself.
 
 The routes below describe the **web-side Better Auth surface** (paths approximate Better Auth's conventions) plus the shapes the api sees. Treat request/response bodies as the contract; exact Better Auth paths are finalised in Phase 3.
 
@@ -84,7 +84,7 @@ Rate limited per phone and per IP. In development the `StubOtpProvider` logs the
 }
 ```
 
-New phone numbers are registered on first successful verification — there is no separate signup.
+New phone numbers are registered on first successful verification - there is no separate signup.
 
 ### `POST /auth/refresh`
 `{ "refreshToken": "..." }` → new token pair.
@@ -137,13 +137,13 @@ Search and filter. Public.
 }
 ```
 
-`priceFrom` is the cheapest hourly rate across the location's slot types — enough for a results card, not a quote. Never price a booking from it.
+`priceFrom` is the cheapest hourly rate across the location's slot types - enough for a results card, not a quote. Never price a booking from it.
 
 Distance is a bounding-box prefilter in SQL followed by Haversine in JS. `distanceKm` and `walkingMinutes` are omitted when `lat`/`lng` are absent.
 
 ### `GET /locations/:id`
 
-Full detail — everything above plus per-slot-type capacity and pricing:
+Full detail - everything above plus per-slot-type capacity and pricing:
 
 ```json
 {
@@ -176,7 +176,7 @@ Lightweight polling fallback for clients without a working socket.
 }
 ```
 
-Computed from the database, not the cache — this endpoint is the reconciliation path.
+Computed from the database, not the cache - this endpoint is the reconciliation path.
 
 ---
 
@@ -228,7 +228,7 @@ Create a booking, acquire a hold, and open a payment order. This is the reservat
 }
 ```
 
-Returns `409 SLOT_UNAVAILABLE` when the transactional capacity check fails. Clients must handle this even when the availability shown a moment earlier was non-zero — that number is advisory, and the race is real.
+Returns `409 SLOT_UNAVAILABLE` when the transactional capacity check fails. Clients must handle this even when the availability shown a moment earlier was non-zero - that number is advisory, and the race is real.
 
 ### `GET /bookings/me` 🔒
 `?status=` and `?upcoming=true` filters. Newest first.
@@ -252,7 +252,7 @@ Legal from `PENDING` and `CONFIRMED`. From `ACTIVE` or later returns `409 INVALI
 }
 ```
 
-Capacity is re-checked for the **added interval only**. Extension can legitimately fail with `409 SLOT_UNAVAILABLE` when the slot is booked by someone else later — the UI must present that as a normal outcome, not an error state.
+Capacity is re-checked for the **added interval only**. Extension can legitimately fail with `409 SLOT_UNAVAILABLE` when the slot is booked by someone else later - the UI must present that as a normal outcome, not an error state.
 
 ---
 
@@ -301,13 +301,13 @@ Public, signature-verified. Payload shaped like Razorpay's so the real adapter i
 On success: `Payment → SUCCESS`, `Booking PENDING → CONFIRMED`, ticket issued, hold released, availability delta emitted.
 On failure: `Payment → FAILED`, hold released, booking left to expire.
 
-Handling is **idempotent by `providerPaymentId`** — gateways retry webhooks, and a non-idempotent handler will double-issue tickets.
+Handling is **idempotent by `providerPaymentId`** - gateways retry webhooks, and a non-idempotent handler will double-issue tickets.
 
 ---
 
 ## Vehicles
 
-Saved vehicles for the booking picker. Every route is scoped to the session user; a vehicle id from another account resolves to `404 NOT_FOUND`, not `403` — confirming that someone else's id exists is itself a leak.
+Saved vehicles for the booking picker. Every route is scoped to the session user; a vehicle id from another account resolves to `404 NOT_FOUND`, not `403` - confirming that someone else's id exists is itself a leak.
 
 ### `GET /vehicles` 🔒
 
@@ -338,11 +338,11 @@ Returns the vehicle. Two behaviours worth knowing:
 { "label": "Office car", "vehicleType": "EV_CAR", "isDefault": true }
 ```
 
-All fields optional. The plate is **not** editable — a vehicle is identified by its registration number; correcting a typo means adding the right plate and deleting the wrong one. Setting `isDefault: true` clears the flag on the citizen's other vehicles in the same transaction.
+All fields optional. The plate is **not** editable - a vehicle is identified by its registration number; correcting a typo means adding the right plate and deleting the wrong one. Setting `isDefault: true` clears the flag on the citizen's other vehicles in the same transaction.
 
 ### `DELETE /vehicles/:id` 🔒
 
-`204`. Past bookings are unaffected — `Booking.vehicleNumber` is a plain column, not a relation.
+`204`. Past bookings are unaffected - `Booking.vehicleNumber` is a plain column, not a relation.
 
 ---
 
@@ -352,17 +352,17 @@ Saved parking locations.
 
 ### `GET /favourites` 🔒
 
-Returns `LocationSummary[]` — the same shape as a search result, most recently saved first. `priceFrom` and `availability` carry the same display-only caveats they do in search: never price or authorise a booking from them.
+Returns `LocationSummary[]` - the same shape as a search result, most recently saved first. `priceFrom` and `availability` carry the same display-only caveats they do in search: never price or authorise a booking from them.
 
 Locations deleted since being favourited are omitted rather than returned as nulls.
 
 ### `PUT /favourites/:locationId` 🔒
 
-`204`. Idempotent — saving twice is the same as saving once. An unknown location returns `404 NOT_FOUND`.
+`204`. Idempotent - saving twice is the same as saving once. An unknown location returns `404 NOT_FOUND`.
 
 ### `DELETE /favourites/:locationId` 🔒
 
-`204`. Idempotent — removing something already gone is a success, not a `404`.
+`204`. Idempotent - removing something already gone is a success, not a `404`.
 
 ---
 
@@ -383,7 +383,7 @@ Socket.IO at the API origin, namespace `/realtime`.
 | `availability:delta` | `{ locationId, slotTypeId, available, occupied }` | Booking confirmed/cancelled, check-in, check-out |
 | `booking:updated` | `{ bookingId, status }` | Own bookings, authenticated sockets only |
 
-`availability:snapshot` is computed from the database and is how cache drift self-heals — clients replace local state on snapshot rather than merging it.
+`availability:snapshot` is computed from the database and is how cache drift self-heals - clients replace local state on snapshot rather than merging it.
 
 **The cached counter is advisory.** Never gate a booking attempt on it client-side; let `POST /bookings` decide.
 

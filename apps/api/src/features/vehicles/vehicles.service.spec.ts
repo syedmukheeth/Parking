@@ -69,7 +69,7 @@ describe('VehiclesService', () => {
       const repo = buildRepo({ findOwned: vi.fn().mockResolvedValue(null) });
       const service = buildService(repo);
 
-      // NOT_FOUND rather than FORBIDDEN on purpose — telling one citizen that
+      // NOT_FOUND rather than FORBIDDEN on purpose - telling one citizen that
       // another's vehicle id exists is itself a leak.
       await expect(service.update('usr_2', CAR.id, { isDefault: true })).rejects.toBeInstanceOf(
         DomainError,

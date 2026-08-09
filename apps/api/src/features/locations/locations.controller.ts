@@ -10,7 +10,7 @@ import {
 import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { LocationsService } from './locations.service';
 
-/** HTTP only — parse, delegate, serialise. No logic lives here. */
+/** HTTP only - parse, delegate, serialise. No logic lives here. */
 @Controller('locations')
 export class LocationsController {
   constructor(private readonly locationsService: LocationsService) {}

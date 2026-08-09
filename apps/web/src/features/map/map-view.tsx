@@ -30,7 +30,7 @@ export interface MapViewProps {
  * The map.
  *
  * Markers are managed imperatively against a keyed map rather than re-created
- * on every render — recreating 35 DOM nodes each time availability ticks would
+ * on every render, recreating 35 DOM nodes each time availability ticks would
  * make the whole surface flicker and drop any in-progress hover.
  *
  * Availability shown here is advisory, exactly like the list badges. The
@@ -51,7 +51,7 @@ export function MapView({
   const onSelectRef = useRef(onSelect);
   onSelectRef.current = onSelect;
 
-  // Only the first N locations hold a live subscription — see MAX_LIVE_MARKERS.
+  // Only the first N locations hold a live subscription, see MAX_LIVE_MARKERS.
   const liveIds = useMemo(
     () => locations.slice(0, MAX_LIVE_MARKERS).map((location) => location.id),
     [locations],
@@ -74,7 +74,7 @@ export function MapView({
     });
 
     map.addControl(new NavigationControl({ showCompass: false }), 'top-right');
-    // Honour the OS setting — MapLibre's fly animations are not covered by the
+    // Honour the OS setting: MapLibre's fly animations are not covered by the
     // CSS reduced-motion block, they run on the GPU.
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
       map.scrollZoom.setWheelZoomRate(1);
@@ -84,7 +84,7 @@ export function MapView({
 
     // Captured now rather than read at teardown. The ref holds one stable Map
     // instance for the component's life, so this is the same object either way
-    // — but reading `.current` inside a cleanup is the pattern that silently
+    //, but reading `.current` inside a cleanup is the pattern that silently
     // breaks when a ref is later reassigned, which is what the lint rule is
     // guarding against.
     const markers = markersRef.current;

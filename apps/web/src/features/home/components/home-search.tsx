@@ -10,7 +10,7 @@ import { GeolocateButton } from '@/features/search/components/geolocate-button';
  * The primary action on the home screen.
  *
  * Still a real `<form>` with a GET action, so it works before hydration and
- * without JavaScript — the router push is an enhancement, not the mechanism.
+ * without JavaScript: the router push is an enhancement, not the mechanism.
  */
 export function HomeSearch() {
   const router = useRouter();

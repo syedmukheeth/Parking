@@ -1,7 +1,7 @@
 import { z } from 'zod';
 
 /**
- * Money. Always integer paise — never rupees, never a float.
+ * Money. Always integer paise: never rupees, never a float.
  * `4000` is ₹40.00. Formatting happens at the UI edge, nowhere else.
  */
 export const paiseSchema = z
@@ -9,7 +9,7 @@ export const paiseSchema = z
   .int('Amounts are integer paise, not rupees or floats')
   .nonnegative();
 
-/** cuid — sortable, non-guessable, no enumeration of bookings. */
+/** cuid: sortable, non-guessable, no enumeration of bookings. */
 export const cuidSchema = z.string().min(1).max(64);
 
 /** E.164, India. `+91XXXXXXXXXX`. */
@@ -19,7 +19,7 @@ export const phoneSchema = z
 
 /**
  * Wall-clock time of day. Daily schedules have no date and no timezone, so they
- * are strings — storing them as DateTime invites timezone bugs on a field that
+ * are strings, storing them as DateTime invites timezone bugs on a field that
  * has none. `"00:00"`–`"23:59"` on a location means 24h.
  */
 export const hhmmSchema = z
@@ -43,7 +43,7 @@ export const vehicleNumberSchema = z
   );
 
 /**
- * Query-string booleans. `z.coerce.boolean()` is wrong here — it turns the
+ * Query-string booleans. `z.coerce.boolean()` is wrong here, it turns the
  * string `"false"` into `true`, which silently inverts every filter.
  */
 export const booleanQuerySchema = z

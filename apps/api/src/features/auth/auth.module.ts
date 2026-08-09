@@ -11,7 +11,7 @@ import { StubOtpProvider } from './providers/stub-otp.provider';
     AuthService,
     AuthRepository,
     // Real MSG91/Twilio providers are a new file behind this token, selected
-    // by OTP_PROVIDER — swap, not refactor (docs/ARCHITECTURE.md §6). Not
+    // by OTP_PROVIDER - swap, not refactor (docs/ARCHITECTURE.md §6). Not
     // built in this slice (docs/ROADMAP.md, Proposal Phase 2).
     { provide: OTP_PROVIDER, useClass: StubOtpProvider },
   ],

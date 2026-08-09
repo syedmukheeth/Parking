@@ -1,7 +1,7 @@
 'use client';
 
 /**
- * Every error offers a way forward — a retry, or a link somewhere useful.
+ * Every error offers a way forward: a retry, or a link somewhere useful.
  * An error message with no next action just tells the citizen they are stuck.
  */
 export function ErrorState({

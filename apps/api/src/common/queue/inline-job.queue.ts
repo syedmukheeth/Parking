@@ -16,7 +16,7 @@ import type { JobQueue } from './queue.interface';
  *
  * What is genuinely lost versus the queue: BullMQ's retries and its
  * dead-letter queue. A failure here is logged and the booking stays confirmed
- * without a ticket — which is why TicketsService.getQr issues one lazily when
+ * without a ticket, which is why TicketsService.getQr issues one lazily when
  * it finds a confirmed booking with no ticket. That recovery path is what
  * makes swallowing the error safe rather than negligent.
  */
@@ -28,7 +28,7 @@ export class InlineBookingConfirmedQueue implements JobQueue<BookingConfirmedJob
   async enqueue(data: BookingConfirmedJobData): Promise<void> {
     try {
       // Resolved lazily. TicketsService pulls in BookingsModule, and this
-      // queue is provided by a @Global module that BookingsModule depends on —
+      // queue is provided by a @Global module that BookingsModule depends on:
       // taking it as a constructor dependency would make the container
       // instantiate that ring at boot.
       const tickets = this.moduleRef.get(TicketsService, { strict: false });
@@ -40,7 +40,7 @@ export class InlineBookingConfirmedQueue implements JobQueue<BookingConfirmedJob
       // already recorded; failing the response here would tell the citizen the
       // payment failed when it did not.
       this.logger.error(
-        `inline booking-confirmed failed for ${data.bookingId} — the ticket will be issued when the pass is opened`,
+        `inline booking-confirmed failed for ${data.bookingId}: the ticket will be issued when the pass is opened`,
         error instanceof Error ? error.stack : String(error),
       );
     }

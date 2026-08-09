@@ -16,7 +16,7 @@ export class BookingRepository {
 
   /** Opens (or reuses) a Serializable transaction. Isolation matters here:
    * two racing transactions attempting the last slot must not both observe
-   * "capacity available" — Serializable forces one to fail with Postgres
+   * "capacity available" - Serializable forces one to fail with Postgres
    * error 40001, which the caller retries a bounded number of times
    * (parkap-backend skill). */
   runInTransaction<T>(fn: (tx: TxClient) => Promise<T>): Promise<T> {
@@ -33,13 +33,13 @@ export class BookingRepository {
 
   /**
    * The correctness-core query (docs/DATA-MODEL.md). Strict inequality on
-   * both overlap bounds — a booking ending at 14:00 does not conflict with
+   * both overlap bounds - a booking ending at 14:00 does not conflict with
    * one starting at 14:00; `<=` would silently halve capacity at every hour
    * boundary.
    *
    * Deliberately counts unexpired PENDING rows alongside CONFIRMED/ACTIVE,
    * not just the cache hold, so the guarantee holds even if Redis is slow or
-   * briefly unavailable — the row inserted inside this same transaction *is*
+   * briefly unavailable - the row inserted inside this same transaction *is*
    * the hold as far as Postgres serialization is concerned. The separate
    * Redis hold (BookingHoldStore) is the fast, advisory signal for realtime
    * and the UI; it never has to be correct on its own for safety.
@@ -133,7 +133,7 @@ export class BookingRepository {
     return client.booking.update({ where: { id }, data: { endAt, finalAmount } });
   }
 
-  /** Adds an overstay charge without touching `endAt` — the booked window is
+  /** Adds an overstay charge without touching `endAt` - the booked window is
    * historical fact; only the amount owed grows. */
   async addOverstayCharge(id: string, overstayAmount: number, tx: TxClient) {
     const current = await tx.booking.findUniqueOrThrow({ where: { id } });

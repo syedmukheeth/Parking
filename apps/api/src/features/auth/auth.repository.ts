@@ -23,7 +23,7 @@ function toUser(row: UserRow): User {
 }
 
 /** All Prisma access for the auth feature lives here. New phone numbers are
- * registered on first successful OTP verification — there is no separate
+ * registered on first successful OTP verification - there is no separate
  * signup (docs/API-CONTRACT.md). */
 @Injectable()
 export class AuthRepository {

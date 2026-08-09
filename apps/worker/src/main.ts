@@ -15,7 +15,7 @@ async function main(): Promise<void> {
   initSentry(env.SENTRY_DSN);
   console.warn(`[worker] starting (${env.NODE_ENV}), concurrency ${env.WORKER_CONCURRENCY}`);
 
-  // BullMQ requires this on any connection it's handed — without it, the
+  // BullMQ requires this on any connection it's handed - without it, the
   // blocking commands it uses internally fail under retry.
   const connection = new IORedis(env.REDIS_URL, { maxRetriesPerRequest: null });
 
@@ -48,7 +48,7 @@ async function main(): Promise<void> {
     console.error(`[hold-sweep] job ${job?.id} failed: ${error.message}`);
   });
 
-  console.warn('[worker] ready — consuming booking-confirmed and hold-sweep queues');
+  console.warn('[worker] ready - consuming booking-confirmed and hold-sweep queues');
 
   const shutdown = async (signal: string): Promise<void> => {
     console.warn(`[worker] ${signal} received, shutting down`);

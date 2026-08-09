@@ -34,7 +34,7 @@ export type CreateBookingResponse = z.infer<typeof createBookingResponseSchema>;
 /**
  * Webhook payload, shaped like Razorpay's so the real adapter is a new file
  * rather than a refactor of the booking service. Handling is idempotent by
- * `providerPaymentId` — gateways retry, and a non-idempotent handler
+ * `providerPaymentId`: gateways retry, and a non-idempotent handler
  * double-issues tickets.
  */
 export const paymentWebhookSchema = z.object({

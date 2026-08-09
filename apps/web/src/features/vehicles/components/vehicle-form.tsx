@@ -5,7 +5,7 @@ import { VEHICLE_TYPE } from '@parkap/shared';
 import { t } from '@/i18n/messages';
 import { createVehicleAction } from '../actions';
 
-/** Add-a-vehicle form. Submits through the Server Action in ../actions.ts —
+/** Add-a-vehicle form. Submits through the Server Action in ../actions.ts:
  * never a bare fetch to the api (parkap-frontend skill). */
 export function VehicleForm() {
   const formRef = useRef<HTMLFormElement>(null);

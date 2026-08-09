@@ -2,7 +2,7 @@ import { defineConfig, devices } from '@playwright/test';
 
 /**
  * Needs the full stack running (web :3000, api :4000, worker attached, real
- * Neon/Upstash) — `npm run dev` from the repo root, then `npm run e2e -w
+ * Neon/Upstash) - `npm run dev` from the repo root, then `npm run e2e -w
  * @parkap/web` in another terminal. Not run in this environment; see
  * e2e/README.md.
  */

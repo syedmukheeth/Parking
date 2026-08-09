@@ -11,7 +11,7 @@ import { buildTestingModule } from './test-module';
  * The single most important test in the repo (parkap-testing skill): N
  * concurrent attempts to reserve the last slot must produce exactly one
  * success, the rest SLOT_UNAVAILABLE. This exercises the Serializable
- * transaction in BookingRepository.countOverlapping directly — no mock
+ * transaction in BookingRepository.countOverlapping directly - no mock
  * would prove anything here, hence a real Postgres.
  */
 describe.skipIf(!hasTestDatabase)('booking capacity race', () => {
@@ -81,7 +81,7 @@ describe.skipIf(!hasTestDatabase)('booking capacity race', () => {
       vehicleType: 'CAR',
     });
 
-    // Starts exactly when the first one ends — must succeed (strict inequality).
+    // Starts exactly when the first one ends - must succeed (strict inequality).
     const second = await bookingsService.create(userB.id, {
       locationId: location.id,
       slotTypeId: slotType.id,

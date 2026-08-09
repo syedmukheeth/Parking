@@ -10,7 +10,7 @@ import { requestLocationSnapshot, subscribeToLocationAvailability } from '@/lib/
  * The number a citizen actually came for, at the size that implies.
  *
  * Live over the socket, seeded from the server render so there's no flash of
- * an empty count. Still advisory — this figure never gates a booking; the
+ * an empty count. Still advisory, this figure never gates a booking; the
  * transactional capacity check does (CLAUDE.md).
  */
 export function AvailabilityHero({ location }: { location: LocationDetail }) {

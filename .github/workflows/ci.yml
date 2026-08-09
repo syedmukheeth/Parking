@@ -24,7 +24,7 @@ jobs:
     runs-on: ubuntu-latest
     # A local Postgres/Redis service container stands in for the per-PR Neon
     # branch + Upstash instance the parkap-devops skill describes as the
-    # ideal — swap this job's DATABASE_URL/REDIS_URL for a provisioned Neon
+    # ideal - swap this job's DATABASE_URL/REDIS_URL for a provisioned Neon
     # PR branch and Upstash database once those integrations are set up;
     # transactions/serialization behave the same against either.
     services:
@@ -79,7 +79,7 @@ jobs:
 
   # Publishes the api and worker images the container host pulls
   # (docs/DEPLOYMENT.md). GITHUB_TOKEN is enough to push to GHCR, so this
-  # needs no configured secret — unlike the release step below.
+  # needs no configured secret - unlike the release step below.
   images:
     if: github.ref == 'refs/heads/main'
     needs: [build]
@@ -100,7 +100,7 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
       - uses: docker/build-push-action@v6
         with:
-          # The repo root — npm workspaces need the whole tree to resolve
+          # The repo root - npm workspaces need the whole tree to resolve
           # @parkap/shared.
           context: .
           file: apps/${{ matrix.app }}/Dockerfile
@@ -120,7 +120,7 @@ jobs:
     needs: [images]
     runs-on: ubuntu-latest
     # The `secrets` context is not available in a step's `if`, so presence is
-    # resolved once here — job-level `env` can read it — and the steps below
+    # resolved once here, job-level `env` can read it, and the steps below
     # branch on these flags instead.
     env:
       NODE_VERSION: '22'
@@ -146,5 +146,5 @@ jobs:
       - name: Report a skipped deploy
         if: env.HAS_WEBHOOK != 'true'
         run: |
-          echo "No DEPLOY_WEBHOOK_URL secret set — images are published, nothing was deployed."
+          echo "No DEPLOY_WEBHOOK_URL secret set - images are published, nothing was deployed."
           echo "See docs/DEPLOYMENT.md."

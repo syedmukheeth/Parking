@@ -5,7 +5,7 @@ import { SessionGuard } from '../../common/auth/session.guard';
 import { FavouritesService } from './favourites.service';
 
 /**
- * HTTP only — parse, delegate, serialise. `PUT`/`DELETE` rather than `POST`
+ * HTTP only - parse, delegate, serialise. `PUT`/`DELETE` rather than `POST`
  * because both are idempotent: the citizen's intent is "this lot is saved" /
  * "this lot is not saved", not "append an event".
  */

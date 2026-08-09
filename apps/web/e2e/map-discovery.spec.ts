@@ -26,13 +26,13 @@ test.describe('map discovery', () => {
     expect(reported).toBeGreaterThan(0);
     await expect(markers).toHaveCount(reported);
 
-    // Colour never travels alone — every marker carries a readable label.
+    // Colour never travels alone, every marker carries a readable label.
     for (const marker of await markers.all()) {
       const status = await marker.getAttribute('data-status');
       expect(['available', 'limited', 'full']).toContain(status);
 
       const label = await marker.getAttribute('aria-label');
-      expect(label).toMatch(/\w+ — (\d+ free|Full)/);
+      expect(label).toMatch(/\w+, (\d+ free|Full)/);
     }
   });
 
@@ -56,7 +56,7 @@ test.describe('map discovery', () => {
     const marker = page.locator('.pk-marker').first();
     await expect(marker).toBeVisible({ timeout: 45_000 });
 
-    const name = (await marker.getAttribute('aria-label'))?.split(' — ')[0];
+    const name = (await marker.getAttribute('aria-label'))?.split(', ')[0];
     expect(name).toBeTruthy();
 
     await marker.click();

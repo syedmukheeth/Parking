@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { bookingStatusSchema } from './enums';
 import { cuidSchema, paiseSchema, utcDateSchema } from './primitives';
 
-/** Embedded in the booking-detail response. Never carries `token` — that only
+/** Embedded in the booking-detail response. Never carries `token` - that only
  * ever leaves the api via the dedicated QR endpoint. */
 export const ticketSummarySchema = z.object({
   id: cuidSchema,

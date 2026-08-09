@@ -4,7 +4,7 @@ import { BOOKING_TRANSITIONS, canTransition } from './booking';
 
 /**
  * Table-driven: every legal transition succeeds, every illegal one throws
- * (via the api's assertTransition, which wraps canTransition) — this is one
+ * (via the api's assertTransition, which wraps canTransition) - this is one
  * of the must-have tests in the repo (parkap-testing skill).
  */
 describe('booking state machine', () => {

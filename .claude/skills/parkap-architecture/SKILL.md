@@ -1,6 +1,6 @@
 ---
 name: parkap-architecture
-description: Architecture rules for the ParkAP monorepo — feature-first structure, clean-architecture layering, DDD boundaries, SOLID, and the project non-negotiables. Use when adding a feature, creating a module, deciding where code lives, reviewing structure, or when a change crosses app boundaries (api/web/worker/shared).
+description: Architecture rules for the ParkAP monorepo: feature-first structure, clean-architecture layering, DDD boundaries, SOLID, and the project non-negotiables. Use when adding a feature, creating a module, deciding where code lives, reviewing structure, or when a change crosses app boundaries (api/web/worker/shared).
 ---
 
 # ParkAP Architecture
@@ -15,15 +15,15 @@ Next.js 15 + React 19 + TS · NestJS · PostgreSQL (Neon) · Prisma · Redis (Up
 
 ```
 apps/
-  web/       Next.js 15 — presentation + Better Auth (owns sessions)
-  api/       NestJS — business rules, all DB access, Socket.IO
-  worker/    BullMQ workers — background jobs (notifications, invoices, snapshots)
+  web/       Next.js 15, presentation + Better Auth (owns sessions)
+  api/       NestJS: business rules, all DB access, Socket.IO
+  worker/    BullMQ workers: background jobs (notifications, invoices, snapshots)
 packages/
-  shared/    types + Zod schemas — the cross-app contract
+  shared/    types + Zod schemas, the cross-app contract
   config/    shared eslint/tsconfig/prettier bases (add when standards land)
 ```
 
-Auth split: **web owns Better Auth**, api **verifies** the session token via a guard. Never duplicate auth logic in api — validate, don't re-implement.
+Auth split: **web owns Better Auth**, api **verifies** the session token via a guard. Never duplicate auth logic in api: validate, don't re-implement.
 
 ## Feature-first, inside each app
 
@@ -55,23 +55,23 @@ Dependencies point inward. Outer may import inner; never the reverse.
 ```
 controller → service → repository → PrismaService
                 ↓
-           domain (pure: pricing.engine, state-machine) — imports nothing framework
+           domain (pure: pricing.engine, state-machine), imports nothing framework
 ```
 
-- **Controller** — parse, validate against Zod, delegate, serialise. No logic, no Prisma.
-- **Service** — owns rules, transactions, orchestration. Calls repositories + domain. May call other services, never another controller.
-- **Repository** — the only place Prisma is touched for a feature. Returns domain shapes, not raw Prisma types leaking `include` internals.
-- **Domain** — pure functions/classes, framework-free, unit-tested in isolation (pricing, capacity math, state transitions).
+- **Controller**: parse, validate against Zod, delegate, serialise. No logic, no Prisma.
+- **Service**: owns rules, transactions, orchestration. Calls repositories + domain. May call other services, never another controller.
+- **Repository**: the only place Prisma is touched for a feature. Returns domain shapes, not raw Prisma types leaking `include` internals.
+- **Domain**: pure functions/classes, framework-free, unit-tested in isolation (pricing, capacity math, state transitions).
 
 Reference patterns (understand, don't copy): NestJS DI + modules; Prisma transactions via `$transaction`.
 
 ## SOLID applied here
 
-- **S** — a service does one feature's rules; extract `PricingEngine`, `StateMachine` rather than fattening `BookingService`.
-- **O** — new payment provider / OTP provider / cache driver = new class implementing the interface, no edits to callers.
-- **L** — every `PaymentProvider` impl must satisfy the same contract incl. idempotency; a mock that skips signature verification is a Liskov violation waiting to page someone.
-- **I** — provider interfaces expose what the domain needs (`createOrder`/`verifySignature`/`getStatus`), not the vendor SDK surface.
-- **D** — services depend on interfaces (`OtpProvider`, `PaymentProvider`, `CacheStore`), resolved by Nest DI tokens, not on concrete classes.
+- **S**: a service does one feature's rules; extract `PricingEngine`, `StateMachine` rather than fattening `BookingService`.
+- **O**: new payment provider / OTP provider / cache driver = new class implementing the interface, no edits to callers.
+- **L**, every `PaymentProvider` impl must satisfy the same contract incl. idempotency; a mock that skips signature verification is a Liskov violation waiting to page someone.
+- **I**: provider interfaces expose what the domain needs (`createOrder`/`verifySignature`/`getStatus`), not the vendor SDK surface.
+- **D**: services depend on interfaces (`OtpProvider`, `PaymentProvider`, `CacheStore`), resolved by Nest DI tokens, not on concrete classes.
 
 ## The contract package
 
@@ -91,7 +91,7 @@ Every status union, DTO, filter shape, and error code lives once in `packages/sh
 
 | Question | Answer |
 |---|---|
-| Business rule? | api service or domain — never web |
+| Business rule? | api service or domain, never web |
 | DB query? | feature repository only |
 | Shared type? | `packages/shared` |
 | Long/retryable/scheduled work? | `apps/worker` BullMQ job |

@@ -6,7 +6,7 @@ import { DomainError } from '../errors/domain-error';
 
 /**
  * Maps every thrown error to the stable envelope in docs/API-CONTRACT.md.
- * Never returns a stack trace — unhandled errors log server-side and return a
+ * Never returns a stack trace - unhandled errors log server-side and return a
  * correlation id the client can hand back to support.
  */
 @Catch()

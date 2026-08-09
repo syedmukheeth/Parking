@@ -3,7 +3,7 @@
 import { useRouter, useSearchParams } from 'next/navigation';
 import { useState } from 'react';
 
-/** Geolocation with a manual fallback — the form's `q` text field always
+/** Geolocation with a manual fallback, the form's `q` text field always
  * works without granting location access (parkap-frontend skill, docs/ROADMAP.md
  * Phase 9). */
 export function GeolocateButton() {

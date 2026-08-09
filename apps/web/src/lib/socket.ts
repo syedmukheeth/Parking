@@ -12,7 +12,7 @@ const SOCKET_URL = process.env.NEXT_PUBLIC_SOCKET_URL ?? 'http://localhost:4000'
 
 let socket: Socket | undefined;
 
-/** One shared socket for the whole client app. `token` is the session JWT —
+/** One shared socket for the whole client app. `token` is the session JWT -
  * pass it so the socket also joins its user room for `booking:updated`;
  * omit it for anonymous, availability-only subscriptions. */
 export function getSocket(token?: string): Socket {
@@ -33,7 +33,7 @@ export function getSocket(token?: string): Socket {
 }
 
 /** Re-asks the server for a full snapshot. The subscribe handler always
- * replies with a fresh one, so this doubles as an on-demand refresh —
+ * replies with a fresh one, so this doubles as an on-demand refresh -
  * useful when a delta only carries one slot type's count and a caller needs
  * the full, correctly-aggregated total instead. */
 export function requestLocationSnapshot(locationId: string): void {
@@ -46,7 +46,7 @@ export interface LocationAvailabilitySubscription {
 
 /**
  * Subscribes to a location's availability. `onSnapshot` REPLACES local
- * state (computed from the DB — how cache drift self-heals); `onDelta`
+ * state (computed from the DB - how cache drift self-heals); `onDelta`
  * MERGES a single slot type's count. Re-subscribes automatically on
  * reconnect via the 'connect' event, which is also what re-triggers a fresh
  * snapshot server-side (parkap-frontend skill).

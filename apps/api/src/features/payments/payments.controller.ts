@@ -6,7 +6,7 @@ import { ZodValidationPipe } from '../../common/pipes/zod-validation.pipe';
 import { BookingsService } from '../bookings/bookings.service';
 
 /**
- * Registered under BookingsModule, not PaymentsModule — confirming a payment
+ * Registered under BookingsModule, not PaymentsModule - confirming a payment
  * also transitions a booking, and BookingsService is the one place that
  * orchestrates both. This keeps the module dependency graph one-way
  * (bookings -> payments), with no forwardRef cycle.

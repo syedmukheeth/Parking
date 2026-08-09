@@ -1,7 +1,7 @@
 import Link from 'next/link';
 
 /**
- * Empty is normal in a parking app — "no lots nearby" is Tuesday morning, not
+ * Empty is normal in a parking app: "no lots nearby" is Tuesday morning, not
  * an edge case (parkap-frontend skill). Every data view uses this rather than
  * silently rendering nothing.
  *

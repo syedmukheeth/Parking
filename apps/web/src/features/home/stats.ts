@@ -5,7 +5,7 @@ import type { Booking } from '@parkap/shared';
  *
  * Deliberately three honest numbers. The brief suggested a "hours saved"
  * figure, which would require knowing how long they would have circled looking
- * for a space — the app has no such data, so inventing it would be a made-up
+ * for a space: the app has no such data, so inventing it would be a made-up
  * statistic presented as a measurement.
  *
  * Only terminal, actually-paid states count. Counting a PENDING hold as spend
@@ -15,7 +15,7 @@ const COUNTED_STATUSES = new Set(['CONFIRMED', 'ACTIVE', 'COMPLETED']);
 
 export interface UsageStats {
   sessions: number;
-  /** Integer paise, never a float — money math stays exact (CLAUDE.md). */
+  /** Integer paise, never a float, money math stays exact (CLAUDE.md). */
   totalPaise: number;
   totalMinutes: number;
 }

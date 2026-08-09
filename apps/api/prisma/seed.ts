@@ -1,5 +1,5 @@
 /**
- * Idempotent seed — safe to re-run.
+ * Idempotent seed, safe to re-run.
  *
  * Real Andhra Pradesh place names, not "Test Lot 1". Fake names make a
  * stakeholder review about the data instead of the product, and they hide geo
@@ -923,7 +923,7 @@ const locations: LocationSeed[] = [
   {
     id: 'loc_vzg_rk_beach',
     operatorId: 'op_gvmc_parking',
-    // Distinct from the existing `loc_rk_beach` a few hundred metres north —
+    // Distinct from the existing `loc_rk_beach` a few hundred metres north:
     // two lots on the same road need names a citizen can tell apart.
     name: 'Kursura Submarine Museum Parking',
     address: 'Beach Road, near Kursura Submarine Museum',
@@ -1003,7 +1003,7 @@ const locations: LocationSeed[] = [
     slotTypes: [
       {
         id: 'slt_vzg_jag_car',
-        // Small and central — the lot most likely to read red at peak.
+        // Small and central, the lot most likely to read red at peak.
         vehicleType: 'CAR',
         slotClass: 'COVERED',
         capacity: 24,
@@ -1594,7 +1594,7 @@ const locations: LocationSeed[] = [
  * The demo citizen.
  *
  * Fixed id and phone so apps/web can mint a demo session for it directly when
- * DEMO_AUTO_SIGN_IN is on, without going through the OTP endpoints — those are
+ * DEMO_AUTO_SIGN_IN is on, without going through the OTP endpoints, those are
  * rate limited per phone number, so a few server restarts would lock the demo
  * out of its own app.
  *
@@ -1667,7 +1667,7 @@ async function main(): Promise<void> {
       update: data,
     });
 
-    // Tags are a full replace — the seed file is the source of truth for them.
+    // Tags are a full replace, the seed file is the source of truth for them.
     await prisma.locationTag.deleteMany({
       where: { locationId: location.id, tag: { notIn: tags } },
     });

@@ -15,7 +15,7 @@ export class PaymentRepository {
     return client.payment.create({ data: { ...data, status: 'CREATED' } });
   }
 
-  /** The idempotency lookup — checked before any webhook mutates a payment,
+  /** The idempotency lookup - checked before any webhook mutates a payment,
    * regardless of provider (docs/API-CONTRACT.md: "Handling is idempotent by
    * providerPaymentId"). */
   async findByProviderPaymentId(providerPaymentId: string, tx?: TxClient) {

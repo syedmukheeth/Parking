@@ -73,7 +73,7 @@ export function TicketQr({ bookingId }: { bookingId: string }) {
 
   return (
     <div className="flex flex-col items-center gap-3 px-5 py-6">
-      {/* White plate behind the QR regardless of theme — scanners need the
+      {/* White plate behind the QR regardless of theme, scanners need the
        * quiet zone and the contrast, and a dark-mode QR often will not read. */}
       <div className="rounded-sm bg-white p-3">
         <Image src={state.qrDataUrl} alt={t('ticket.qrAlt')} width={208} height={208} unoptimized />

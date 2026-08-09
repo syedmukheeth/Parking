@@ -17,7 +17,7 @@ import { AuthService } from './auth.service';
 
 /**
  * `otp/request` and `otp/verify` are called server-side by apps/web's session
- * layer, which mints the session cookie on success — this controller never
+ * layer, which mints the session cookie on success - this controller never
  * issues one. `/me` is a normal SessionGuard-protected business route.
  */
 @Controller('auth')

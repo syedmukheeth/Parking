@@ -8,7 +8,7 @@ import { t } from '@/i18n/messages';
  * Root error boundary. Catches anything a route segment throws that its own
  * boundary didn't, so a citizen never lands on Next's default error page.
  *
- * `reset()` re-renders the segment rather than reloading — a transient API
+ * `reset()` re-renders the segment rather than reloading, a transient API
  * failure recovers without losing the rest of the app.
  */
 export default function RootError({ error, reset }: { error: Error & { digest?: string }; reset: () => void }) {

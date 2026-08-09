@@ -6,7 +6,7 @@ import root from '../../eslint.config.mjs';
  * `consistent-type-imports` is incompatible with NestJS dependency injection.
  * A constructor parameter like `private readonly prisma: PrismaService` is
  * syntactically a type-only position, so the rule rewrites the import to
- * `import type` — which erases it at compile time. Nest resolves constructor
+ * `import type`, which erases it at compile time. Nest resolves constructor
  * dependencies from the `design:paramtypes` metadata `emitDecoratorMetadata`
  * writes from that same runtime reference, so the container ends up unable to
  * construct anything, and it fails at boot rather than in the type checker.

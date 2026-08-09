@@ -19,11 +19,11 @@ const STEPS: { id: Step; labelKey: MessageKey }[] = [
 ];
 
 /** Sentinel for the "type a plate this once" option in the vehicle picker. A
- * saved vehicle's id can never collide with it — ids are cuids. */
+ * saved vehicle's id can never collide with it, ids are cuids. */
 const OTHER_VEHICLE = '__other__';
 
 /**
- * A client-managed wizard rather than per-step <form action> bindings — each
+ * A client-managed wizard rather than per-step <form action> bindings, each
  * step's typed result (quote, then booking+payment) feeds the next step, and
  * FormData round-tripping would lose that shape. Mutations still only ever
  * go through the Server Actions in ../actions.ts, never a bare fetch
@@ -36,9 +36,9 @@ export function BookingFlow({
 }: {
   location: LocationDetail;
   /** The citizen's saved vehicles (docs/ROADMAP.md Phase 12). Empty for an
-   * account that hasn't saved one — the free-text field is then the only path. */
+   * account that hasn't saved one, the free-text field is then the only path. */
   vehicles: Vehicle[];
-  /** Repeat-booking pre-fill — carried as a query param from the booking
+  /** Repeat-booking pre-fill, carried as a query param from the booking
    * history page's "Book again" link (docs/ROADMAP.md Phase 12). */
   initialVehicleNumber?: string;
 }) {
@@ -48,7 +48,7 @@ export function BookingFlow({
 
   const [slotTypeId, setSlotTypeId] = useState(location.slotTypes[0]?.id ?? '');
 
-  // A repeat-booking plate wins over the saved default — the citizen asked for
+  // A repeat-booking plate wins over the saved default, the citizen asked for
   // that specific past booking. It still selects the matching saved vehicle
   // when there is one, so the picker doesn't look empty.
   const initialSelection =
@@ -109,7 +109,7 @@ export function BookingFlow({
         vehicleType: selectedSlotType.vehicleType,
       });
       if (!result.ok) {
-        // SLOT_UNAVAILABLE is a normal outcome here, not an error state — the
+        // SLOT_UNAVAILABLE is a normal outcome here, not an error state, the
         // advisory count shown a moment earlier can race a real reservation
         // (docs/API-CONTRACT.md). Send the citizen back to re-quote.
         if (result.code === 'SLOT_UNAVAILABLE') {
@@ -153,7 +153,7 @@ export function BookingFlow({
         </p>
       ) : null}
 
-      {/* `mode="wait"` so the outgoing step finishes before the next arrives —
+      {/* `mode="wait"` so the outgoing step finishes before the next arrives:
        * crossfading two different-height panels makes the card jump. */}
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
@@ -175,7 +175,7 @@ export function BookingFlow({
                   {location.slotTypes.map((slot) => (
                     <option key={slot.id} value={slot.id} disabled={slot.available === 0}>
                       {t(`vehicle.${slot.vehicleType}` as MessageKey)} ·{' '}
-                      {t(`slotClass.${slot.slotClass}` as MessageKey)} —{' '}
+                      {t(`slotClass.${slot.slotClass}` as MessageKey)} ·{' '}
                       {slot.available === 0 ? t('availability.full') : `${slot.available} ${t('availability.free')}`}
                     </option>
                   ))}
@@ -331,7 +331,7 @@ function Field({ label, htmlFor, children }: { label: string; htmlFor: string; c
   );
 }
 
-/** Progress, not navigation — the steps aren't clickable because you can't
+/** Progress, not navigation, the steps aren't clickable because you can't
  * jump to payment without a quote. It exists to tell the citizen how much is
  * left, which is what stops mid-flow abandonment. */
 function Stepper({ currentIndex }: { currentIndex: number }) {

@@ -6,7 +6,7 @@ import { t } from '@/i18n/messages';
 import { isNavItemActive, NAV_ITEMS } from './nav-items';
 
 /**
- * Mobile primary navigation. Desktop uses the header instead — this is
+ * Mobile primary navigation. Desktop uses the header instead, this is
  * `md:hidden`, and the header is `hidden md:flex`, so exactly one is ever
  * present in the accessibility tree.
  *

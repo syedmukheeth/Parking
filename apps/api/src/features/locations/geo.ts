@@ -1,8 +1,8 @@
 /**
- * Pure geo math — framework-free, unit-tested in isolation. Bounding box is a
+ * Pure geo math - framework-free, unit-tested in isolation. Bounding box is a
  * cheap SQL-indexable prefilter; Haversine in JS does the exact circle cut.
  * PostGIS is a deliberate later upgrade once volume justifies it
- * (docs/DATA-MODEL.md) — not something to adopt at seed scale.
+ * (docs/DATA-MODEL.md) - not something to adopt at seed scale.
  */
 
 const EARTH_RADIUS_KM = 6371;
@@ -31,7 +31,7 @@ export interface BoundingBox {
   maxLng: number;
 }
 
-/** Degrees-per-km approximation. Overshoots slightly — that overshoot is what
+/** Degrees-per-km approximation. Overshoots slightly - that overshoot is what
  * makes it a safe SQL prefilter for the exact Haversine cut that follows. */
 export function boundingBox(lat: number, lng: number, radiusKm: number): BoundingBox {
   const latDelta = radiusKm / KM_PER_DEGREE_LAT;

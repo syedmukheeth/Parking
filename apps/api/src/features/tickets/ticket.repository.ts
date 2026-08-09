@@ -22,7 +22,7 @@ export class TicketRepository {
     return client.ticket.create({ data });
   }
 
-  /** Fetched inside the Serializable verify/exit transaction — the row lock
+  /** Fetched inside the Serializable verify/exit transaction - the row lock
    * this implies is what makes usedAt/checkedOutAt replay-safe. */
   async findByTokenWithBooking(token: string, tx: TxClient): Promise<TicketWithBooking | null> {
     return tx.ticket.findUnique({ where: { token }, include: WITH_BOOKING });

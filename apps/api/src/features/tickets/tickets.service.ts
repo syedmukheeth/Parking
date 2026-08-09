@@ -15,7 +15,7 @@ const MINUTES_PER_HOUR = 60;
 
 /**
  * Imports BookingRepository from BookingsModule (one-way: tickets ->
- * bookings). BookingsModule does not import this feature back — ticket
+ * bookings). BookingsModule does not import this feature back - ticket
  * ISSUANCE on payment success is queued to apps/worker (docs/ROADMAP.md
  * Phase 7), not called synchronously here, so no cycle exists.
  */
@@ -27,7 +27,7 @@ export class TicketsService {
     private readonly realtimePublisher: RealtimePublisher,
   ) {}
 
-  /** Called by apps/worker's ticket-issue job consumer would duplicate this —
+  /** Called by apps/worker's ticket-issue job consumer would duplicate this -
    * kept here too so the dev mock-confirm path (no queue round-trip) can
    * issue a ticket inline for a fast local dev loop.
    *
@@ -38,7 +38,7 @@ export class TicketsService {
     if (!booking) throw new DomainError('NOT_FOUND', 'Booking not found');
 
     const existing = await this.ticketRepo.findByBookingId(bookingId);
-    if (existing) return existing; // idempotent — a ticket already exists
+    if (existing) return existing; // idempotent - a ticket already exists
 
     const token = generateTicketToken(bookingId, loadEnv().TICKET_TOKEN_SECRET);
     return this.ticketRepo.create({ bookingId, token, expiresAt: booking.endAt }, tx);
@@ -52,7 +52,7 @@ export class TicketsService {
     }
 
     // A confirmed booking with no ticket means the issuing step has not landed
-    // yet — the worker is behind, or `JOB_RUNNER=inline` ran it and failed with
+    // yet - the worker is behind, or `JOB_RUNNER=inline` ran it and failed with
     // no queue to retry it. Issuing here closes both cases. It is idempotent,
     // so racing the worker produces one ticket, not two.
     let ticket = await this.ticketRepo.findByBookingId(bookingId);
@@ -65,7 +65,7 @@ export class TicketsService {
     return { token: ticket.token, qrDataUrl, expiresAt: ticket.expiresAt };
   }
 
-  /** Gate check-in. Read-and-mark-used in one transaction — that is what
+  /** Gate check-in. Read-and-mark-used in one transaction - that is what
    * makes replay detectable (docs/DATA-MODEL.md). */
   async verify(staffUserId: string, token: string): Promise<VerifyTicketResponse> {
     return this.bookingRepo.runInTransaction(async (tx) => {
@@ -97,7 +97,7 @@ export class TicketsService {
     });
   }
 
-  /** Gate check-out. Charges overstay when the vehicle exits after `endAt` —
+  /** Gate check-out. Charges overstay when the vehicle exits after `endAt` -
    * `endAt` itself is never rewritten, only the amount owed grows. */
   async exit(staffUserId: string, token: string): Promise<ExitTicketResponse> {
     return this.bookingRepo.runInTransaction(async (tx) => {

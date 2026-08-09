@@ -21,8 +21,8 @@ interface SearchPageProps {
 }
 
 /**
- * Map-first discovery. The page shell stays a Server Component — the search
- * form still works as a plain GET with no JavaScript — and only the
+ * Map-first discovery. The page shell stays a Server Component, the search
+ * form still works as a plain GET with no JavaScript, and only the
  * map/list/sheet composition below it is client-side.
  *
  * A high limit is deliberate: the map wants every matching lot as a marker,
@@ -58,7 +58,7 @@ async function SearchResults({ params }: { params: Record<string, string | undef
 
   // Distance sort needs an origin: either coordinates or a text query to
   // anchor on. Bare `/search` has neither, and asking for it anyway is a
-  // VALIDATION_FAILED from the api rather than an empty list — so fall back to
+  // VALIDATION_FAILED from the api rather than an empty list, so fall back to
   // the sort that always makes sense with no origin.
   const hasOrigin = Boolean(q || (lat !== undefined && lng !== undefined));
   const requestedSort = (params.sort || 'distance') as LocationSort;

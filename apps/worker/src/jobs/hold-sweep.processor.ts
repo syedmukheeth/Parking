@@ -1,7 +1,7 @@
 import { prisma } from '../prisma';
 
 /**
- * Data-hygiene pass, not a correctness dependency — the capacity check
+ * Data-hygiene pass, not a correctness dependency - the capacity check
  * already excludes PENDING bookings whose hold has elapsed by reading
  * `holdExpiresAt` directly (docs/DATA-MODEL.md). This just formalises those
  * rows to EXPIRED so booking history and dashboards don't show stale PENDING

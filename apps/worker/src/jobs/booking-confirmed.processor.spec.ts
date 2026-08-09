@@ -22,7 +22,7 @@ const END_AT = new Date('2026-08-08T12:00:00.000Z');
  * BullMQ retries and a webhook that fires twice both land here as a repeated
  * job for the same bookingId. Issuing a second ticket would hand the citizen
  * two scannable QRs for one paid booking, so idempotency is the property under
- * test — not the happy path.
+ * test - not the happy path.
  */
 describe('processBookingConfirmed', () => {
   beforeEach(() => {

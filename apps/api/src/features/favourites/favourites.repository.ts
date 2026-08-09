@@ -18,7 +18,7 @@ export class FavouritesRepository {
     return rows.map((row) => row.locationId);
   }
 
-  /** Idempotent — saving a lot twice is the same as saving it once. */
+  /** Idempotent - saving a lot twice is the same as saving it once. */
   async add(userId: string, locationId: string): Promise<void> {
     await this.prisma.favouriteLocation.upsert({
       where: { userId_locationId: { userId, locationId } },
@@ -27,7 +27,7 @@ export class FavouritesRepository {
     });
   }
 
-  /** Idempotent — removing something already gone is a success, not a 404. */
+  /** Idempotent - removing something already gone is a success, not a 404. */
   async remove(userId: string, locationId: string): Promise<void> {
     await this.prisma.favouriteLocation.deleteMany({ where: { userId, locationId } });
   }

@@ -38,7 +38,7 @@ describe('quoteWindow', () => {
     expect(breakdown).toEqual([{ label: 'First 15 min free', amount: 0 }]);
   });
 
-  it('picks the highest-priority applicable rule — festival pricing layers over base', () => {
+  it('picks the highest-priority applicable rule - festival pricing layers over base', () => {
     const base = hourlyRule({ baseAmount: 2000, priority: 0 });
     const festival = hourlyRule({ baseAmount: 5000, priority: 10 });
     const start = new Date('2026-07-24T09:00:00.000Z');

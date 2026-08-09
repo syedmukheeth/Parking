@@ -2,7 +2,7 @@ import type { CacheStore } from '../../src/common/cache/cache-store.interface';
 
 /**
  * Deterministic, in-process CacheStore for unit/integration tests only. Never
- * selected by env in the app itself — RedisCacheStore is the only wiring in
+ * selected by env in the app itself - RedisCacheStore is the only wiring in
  * dev and prod (parkap-backend skill).
  */
 export class InMemoryCacheStore implements CacheStore {

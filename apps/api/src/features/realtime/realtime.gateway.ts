@@ -20,7 +20,7 @@ import { LocationsService } from '../locations/locations.service';
 
 /**
  * Socket.IO at `/realtime`, one room per location id (docs/API-CONTRACT.md).
- * Availability is public — anonymous sockets may subscribe. A socket that
+ * Availability is public - anonymous sockets may subscribe. A socket that
  * presents a valid session token in the handshake also joins its own user
  * room, which is how `booking:updated` stays scoped to that citizen.
  */
@@ -46,7 +46,7 @@ export class RealtimeGateway implements OnGatewayConnection {
         void client.join(userRoom(parsed.data.sub));
       }
     } catch {
-      // Invalid/expired token — the socket stays anonymous, which is fine;
+      // Invalid/expired token - the socket stays anonymous, which is fine;
       // availability subscriptions don't require auth.
     }
   }
@@ -58,7 +58,7 @@ export class RealtimeGateway implements OnGatewayConnection {
 
     await client.join(locationRoom(parsed.data.locationId));
 
-    // Snapshot on subscribe AND reconnect — a reconnect re-triggers this same
+    // Snapshot on subscribe AND reconnect - a reconnect re-triggers this same
     // handler client-side, which is how cache drift self-heals
     // (docs/ARCHITECTURE.md §5).
     try {

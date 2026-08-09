@@ -3,13 +3,13 @@ import { BRAND_HEX } from '@/config/brand';
 
 /**
  * PWA manifest (docs/ROADMAP.md Phase 8). Icon files themselves
- * (icon-192.png, icon-512.png) are a design asset this pass doesn't produce —
+ * (icon-192.png, icon-512.png) are a design asset this pass doesn't produce -
  * drop real ones into apps/web/public/ before shipping; the app still
  * installs without them, just with a placeholder icon.
  */
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'ParkAP — Andhra Pradesh Smart Parking',
+    name: 'ParkAP · Andhra Pradesh Smart Parking',
     short_name: 'ParkAP',
     description: 'Find and reserve parking across Andhra Pradesh',
     start_url: '/',

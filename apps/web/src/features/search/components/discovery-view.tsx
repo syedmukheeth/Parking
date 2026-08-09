@@ -25,13 +25,13 @@ export interface DiscoveryViewProps {
  *
  * Exactly ONE map instance exists, repositioned with CSS rather than rendered
  * per breakpoint. Mounting a second hidden MapLibre instance doubles the tile
- * requests, the marker DOM and the realtime subscriptions — all invisible,
+ * requests, the marker DOM and the realtime subscriptions: all invisible,
  * because the duplicate is `display:none`.
  *
  * The list is rendered in both slots, which is cheap DOM and safe for
  * accessibility: the hidden copy is removed from the tree by `display:none`.
  *
- * The list — not the map — is the accessible path through the results. Markers
+ * The list, not the map, is the accessible path through the results. Markers
  * are focusable buttons too, but a screen-reader user should never have to
  * navigate a map to book a space.
  */

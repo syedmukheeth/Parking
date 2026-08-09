@@ -7,7 +7,7 @@ import { loadServerEnv } from '@/config/server-env';
 
 /**
  * apps/web owns the session. It lives in an httpOnly cookie, never
- * localStorage — an XSS on a page holding a token in localStorage is an
+ * localStorage, an XSS on a page holding a token in localStorage is an
  * account takeover (docs/CLAUDE.md non-negotiable 7).
  */
 export const SESSION_COOKIE_NAME = 'parkap_session';
@@ -78,7 +78,7 @@ function getDemoToken(): string | null {
 }
 
 /** Reads and verifies the current session server-side. Returns null rather
- * than throwing — an absent or expired session is a normal, common state. */
+ * than throwing: an absent or expired session is a normal, common state. */
 export async function getSession(): Promise<SessionPayload | null> {
   const token = (await getSessionToken()) ?? getDemoToken();
   if (!token) return null;

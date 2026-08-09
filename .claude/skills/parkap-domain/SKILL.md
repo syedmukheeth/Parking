@@ -1,6 +1,6 @@
 ---
 name: parkap-domain
-description: ParkAP domain model, ubiquitous language, invariants, and the packages/shared contract — the DDD reference for what the words mean and which rules can never be violated. Use when modeling data, naming things, writing a Zod schema/DTO, or deciding whether an operation is legal.
+description: ParkAP domain model, ubiquitous language, invariants, and the packages/shared contract: the DDD reference for what the words mean and which rules can never be violated. Use when modeling data, naming things, writing a Zod schema/DTO, or deciding whether an operation is legal.
 ---
 
 # ParkAP Domain
@@ -26,7 +26,7 @@ Never say "spot"/"space" for SlotType, "order" for Booking, "pass" for Ticket.
 
 ## Aggregates & boundaries
 
-- **Booking is the aggregate root** for the reservation lifecycle. Ticket and Payment are inside its consistency boundary — created and transitioned via booking rules, not independently.
+- **Booking is the aggregate root** for the reservation lifecycle. Ticket and Payment are inside its consistency boundary: created and transitioned via booking rules, not independently.
 - **Location/SlotType/PricingRule** is a separate aggregate (the catalog). Bookings reference it by id; they don't mutate it.
 - Cross-aggregate change is eventual, via events/jobs (e.g. a confirmed booking emits an availability delta), never a single giant transaction across both.
 

@@ -3,7 +3,7 @@ import type { OtpProvider } from '../otp-provider.interface';
 
 /**
  * Logs the code to the API console; never sends a real SMS. The boot guard in
- * config/env.ts refuses to start this under NODE_ENV=production — shipping it
+ * config/env.ts refuses to start this under NODE_ENV=production - shipping it
  * would be a complete authentication bypass (docs/CLAUDE.md non-negotiable 4).
  */
 @Injectable()

@@ -6,7 +6,7 @@ import root from '../../eslint.config.mjs';
  * The web app's config is the root config plus the two React-specific rule
  * sets the rest of the monorepo has no use for.
  *
- * `jsx-a11y` is here to make accessibility enforceable rather than asserted —
+ * `jsx-a11y` is here to make accessibility enforceable rather than asserted:
  * a missing label or a click handler on a `<div>` should fail the build, not a
  * review. `react-hooks` catches stale-closure dependency bugs, which is the
  * failure mode of every effect that reads state it didn't declare.

@@ -3,7 +3,7 @@ import { z } from 'zod';
 /**
  * Every enum here is mirrored by a native Postgres enum in `schema.prisma`.
  * The database enforces the set; this file makes the API boundary enforce the
- * same set. Adding a value is a migration — treat it as a deliberate change.
+ * same set. Adding a value is a migration, treat it as a deliberate change.
  */
 
 export const BOOKING_STATUS = [

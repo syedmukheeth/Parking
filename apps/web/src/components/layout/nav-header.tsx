@@ -8,7 +8,7 @@ import { signOutAction } from '@/features/auth/actions';
 import { isNavItemActive, NAV_ITEMS } from './nav-items';
 
 /**
- * Desktop navigation. Hidden below `md`, where BottomNav takes over — the two
+ * Desktop navigation. Hidden below `md`, where BottomNav takes over, the two
  * are mutually exclusive so a screen reader never hears the same links twice.
  *
  * Deliberately not width-capped: the map pages are full-bleed, and a header

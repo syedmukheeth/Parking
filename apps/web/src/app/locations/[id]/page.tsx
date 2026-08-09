@@ -24,7 +24,7 @@ export async function generateMetadata({ params }: LocationPageProps): Promise<M
   const { id } = await params;
   try {
     const location = await getLocationDetail(id);
-    const description = `${location.name} — parking in ${location.city}. ${location.address}.`;
+    const description = `Parking at ${location.name} in ${location.city}. ${location.address}.`;
     return {
       title: location.name,
       description,
@@ -74,7 +74,7 @@ export default async function LocationDetailPage({ params, searchParams }: Locat
 
   return (
     <main className="mx-auto flex max-w-5xl flex-col gap-8 px-4 py-6 sm:px-6 lg:py-10">
-      {/* Static, server-generated structured data built from typed fields —
+      {/* Static, server-generated structured data built from typed fields:
        * no user input reaches this string. */}
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }} />
 

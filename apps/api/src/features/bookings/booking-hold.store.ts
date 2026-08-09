@@ -2,12 +2,12 @@ import { Inject, Injectable } from '@nestjs/common';
 import { CACHE_STORE, type CacheStore } from '../../common/cache/cache-store.interface';
 
 /**
- * The short-TTL cache hold from docs/ARCHITECTURE.md §4 — advisory only. The
+ * The short-TTL cache hold from docs/ARCHITECTURE.md §4 - advisory only. The
  * actual double-booking guard is the Serializable Postgres transaction in
  * BookingRepository.countOverlapping, which counts unexpired PENDING rows
  * directly (see the comment there for why). This store exists so realtime and
  * the UI can show "just taken" instantly, without waiting on a DB round-trip,
- * and so a hold naturally requires no cleanup job — TTL does the work.
+ * and so a hold naturally requires no cleanup job - TTL does the work.
  */
 @Injectable()
 export class BookingHoldStore {

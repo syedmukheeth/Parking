@@ -1,10 +1,10 @@
 /**
  * The api returns paise (Int) and UTC ISO strings. Money math never happens
- * in the browser — only display formatting, here, at the edge
+ * in the browser - only display formatting, here, at the edge
  * (parkap-frontend skill).
  */
 /**
- * Whole rupees render without decimals — parking tariffs are round numbers and
+ * Whole rupees render without decimals - parking tariffs are round numbers and
  * "₹20.00/hr" reads like a bank statement. Paise still show when they exist,
  * which they do on GST-inclusive totals.
  */

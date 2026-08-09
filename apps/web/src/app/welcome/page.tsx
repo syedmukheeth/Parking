@@ -5,10 +5,10 @@ import { searchLocations } from '@/features/search/api';
 import { COVERED_CITIES } from '@/features/marketing/cities';
 
 export const metadata: Metadata = {
-  title: { absolute: `${t('app.name')} — ${t('app.tagline')}` },
+  title: { absolute: `${t('app.name')} · ${t('app.tagline')}` },
   description: t('landing.heroBody'),
   openGraph: {
-    title: `${t('app.name')} — ${t('app.tagline')}`,
+    title: `${t('app.name')} · ${t('app.tagline')}`,
     description: t('landing.heroBody'),
     type: 'website',
   },

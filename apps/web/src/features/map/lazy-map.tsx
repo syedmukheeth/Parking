@@ -9,7 +9,7 @@ import type { MapViewProps } from './map-view';
  * (bookings, profile, the ticket) never shows a map. Loading it on demand
  * keeps it out of the initial bundle for those routes.
  *
- * `ssr: false` is required, not a preference — MapLibre touches `window` at
+ * `ssr: false` is required, not a preference: MapLibre touches `window` at
  * module scope and throws during a server render.
  */
 export const LazyMap = dynamic<MapViewProps>(() => import('./map-view').then((m) => m.MapView), {

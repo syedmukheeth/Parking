@@ -1,4 +1,4 @@
-# CLAUDE.md — ParkAP house rules
+# CLAUDE.md: ParkAP house rules
 
 Instructions for AI agents and new contributors working in this repository. Read this before writing code here.
 
@@ -8,14 +8,14 @@ Project background: [README.md](README.md) · [docs/ARCHITECTURE.md](docs/ARCHIT
 
 ## What this is
 
-ParkAP — a smart parking platform for Andhra Pradesh. Currently building **Phase 1 MVP, citizen portal core**: search → live availability → reserve → QR entry → history.
+ParkAP: a smart parking platform for Andhra Pradesh. Currently building **Phase 1 MVP, citizen portal core**: search → live availability → reserve → QR entry → history.
 
 npm workspaces + Turbo monorepo. Stack: Next.js 15 / React 19 · NestJS · PostgreSQL (Neon) · Prisma · Redis (Upstash) · BullMQ · Socket.IO · Better Auth · Razorpay · Sentry + OpenTelemetry · Vitest + Playwright + MSW.
 
 ```
 apps/web          Next.js 15 App Router. Presentation + Better Auth (owns sessions).
 apps/api          NestJS + Prisma + Socket.IO. All business rules, all DB access. Verifies sessions.
-apps/worker       BullMQ workers. Background jobs — notifications, invoices, snapshots.
+apps/worker       BullMQ workers. Background jobs: notifications, invoices, snapshots.
 packages/shared   Zod schemas + types. The contract across all three apps.
 ```
 
@@ -27,9 +27,9 @@ Detailed, enforced rules live in `.claude/skills/parkap-*`. Consult them: `parka
 
 These cause expensive, hard-to-reverse damage when broken. Do not violate them without an explicit decision recorded in `docs/ARCHITECTURE.md`.
 
-### 1. Postgres from day one (Neon) — use it well
+### 1. Postgres from day one (Neon), use it well
 
-Dev and prod both run **PostgreSQL** (Neon), so use native features: real `enum`s, relations, `@@index`, `@db` types. Every enum is mirrored as a Zod enum in `packages/shared` so the API boundary validates the same set. Schema changes ship as committed `prisma migrate` migrations — never `db push` against a shared branch. Full detail in [docs/DATA-MODEL.md](docs/DATA-MODEL.md).
+Dev and prod both run **PostgreSQL** (Neon), so use native features: real `enum`s, relations, `@@index`, `@db` types. Every enum is mirrored as a Zod enum in `packages/shared` so the API boundary validates the same set. Schema changes ship as committed `prisma migrate` migrations, never `db push` against a shared branch. Full detail in [docs/DATA-MODEL.md](docs/DATA-MODEL.md).
 
 ### 2. Money is integer paise
 
@@ -41,7 +41,7 @@ Server clock is authoritative for holds, expiry, and overstay. Never trust a cli
 
 ### 4. Stubs live behind interfaces, and never reach production
 
-`OtpProvider`, `PaymentProvider`, `CacheStore`. Swapping stub → real is a new file plus an env var, never a refactor of call sites. Interfaces are shaped by what the domain needs, not by a vendor SDK — an interface that mirrors Razorpay's API is not an abstraction.
+`OtpProvider`, `PaymentProvider`, `CacheStore`. Swapping stub → real is a new file plus an env var, never a refactor of call sites. Interfaces are shaped by what the domain needs, not by a vendor SDK, an interface that mirrors Razorpay's API is not an abstraction.
 
 The API **throws on boot** if a stub provider is active while `NODE_ENV=production`. That guard is load-bearing: the stub OTP accepts `123456` for every phone number, so shipping it is a complete authentication bypass. Do not remove or weaken it.
 
@@ -54,11 +54,11 @@ Every reservation runs it inside a Prisma transaction. Two details:
 
 ### 6. Booking status changes go through the state machine
 
-`PENDING → CONFIRMED → ACTIVE → COMPLETED`, plus `CANCELLED` / `EXPIRED`. Legal transitions are declared as data and enforced in one place. No service assigns `booking.status` directly — a machine that can be bypassed becomes decorative within a month.
+`PENDING → CONFIRMED → ACTIVE → COMPLETED`, plus `CANCELLED` / `EXPIRED`. Legal transitions are declared as data and enforced in one place. No service assigns `booking.status` directly, a machine that can be bypassed becomes decorative within a month.
 
 ### 7. Auth lives in web (Better Auth); api verifies, never re-implements
 
-Better Auth runs in `apps/web` and owns sessions. Session tokens live in **httpOnly cookies**, never `localStorage` — an XSS on a page holding a token in `localStorage` is an account takeover. `apps/api` validates the forwarded session via `SessionGuard` and applies RBAC; it does not duplicate auth logic.
+Better Auth runs in `apps/web` and owns sessions. Session tokens live in **httpOnly cookies**, never `localStorage`, an XSS on a page holding a token in `localStorage` is an account takeover. `apps/api` validates the forwarded session via `SessionGuard` and applies RBAC; it does not duplicate auth logic.
 
 ### 8. Webhook handling is idempotent
 
@@ -74,7 +74,7 @@ Status unions, DTOs, filter shapes, error codes. The API validates against those
 
 ### Backend
 
-- Controllers do HTTP only — parse, delegate, serialise. No logic.
+- Controllers do HTTP only: parse, delegate, serialise. No logic.
 - Services own the rules. A service may call another service; never another module's controller.
 - Only `PrismaService` instantiates a Prisma client.
 - Every inbound boundary validates with the Zod schema from `packages/shared`.
@@ -83,9 +83,9 @@ Status unions, DTOs, filter shapes, error codes. The API validates against those
 ### Frontend
 
 - Server Components by default. Client Components only for interaction or socket subscriptions.
-- No business logic in the web app. If a rule matters, it belongs in the API — the client can be bypassed.
+- No business logic in the web app. If a rule matters, it belongs in the API, the client can be bypassed.
 - All fetches go through `lib/api.ts`. No bare `fetch` to the API in a component.
-- Every data view handles loading, error, and empty states. Empty is not an edge case in a parking app — it is Tuesday morning.
+- Every data view handles loading, error, and empty states. Empty is not an edge case in a parking app, it is Tuesday morning.
 - No hardcoded user-facing strings. Telugu is a launch requirement; externalise from the first render.
 
 ### Naming
@@ -104,9 +104,9 @@ Status unions, DTOs, filter shapes, error codes. The API validates against those
 
 ### Before changing anything
 
-1. Read the phase in [docs/ROADMAP.md](docs/ROADMAP.md) — the work may be deliberately deferred rather than missing.
-2. Check `packages/shared` — the type probably exists.
-3. Check [docs/API-CONTRACT.md](docs/API-CONTRACT.md) — the endpoint shape is likely already specified.
+1. Read the phase in [docs/ROADMAP.md](docs/ROADMAP.md), the work may be deliberately deferred rather than missing.
+2. Check `packages/shared`, the type probably exists.
+3. Check [docs/API-CONTRACT.md](docs/API-CONTRACT.md), the endpoint shape is likely already specified.
 
 ### Before saying it works
 
@@ -137,9 +137,9 @@ Things that look right and are not:
 
 | Trap | Reality |
 |---|---|
-| `priceFrom` on a search result | Display only — cheapest hourly rate across slot types. Never price a booking from it. |
+| `priceFrom` on a search result | Display only, cheapest hourly rate across slot types. Never price a booking from it. |
 | Availability from a socket delta | Advisory. Snapshot on reconnect replaces it. Never gate a booking on it. |
-| Extending a booking | Re-checks capacity for the **added interval only**, and can legitimately fail. Not an error state — a normal outcome the UI must present. |
+| Extending a booking | Re-checks capacity for the **added interval only**, and can legitimately fail. Not an error state, a normal outcome the UI must present. |
 | `<=` in the overlap query | Halves capacity at hour boundaries. Always strict on both sides. |
 | Storing open/close as `DateTime` | They are wall-clock daily schedules with no date and no timezone. Strings. |
 | `totalCapacity` on `ParkingLocation` | Does not exist, deliberately. Capacity lives on `SlotType` and would drift if denormalised. |
@@ -149,8 +149,8 @@ Things that look right and are not:
 
 ## Scope discipline
 
-The proposal describes four platforms and dozens of features. This slice builds **the citizen core only**. The operator dashboard, municipal dashboard, staff app, real payments, invoices, WhatsApp, passes, and AI features are deferred with named seams to attach to — see [docs/ROADMAP.md](docs/ROADMAP.md).
+The proposal describes four platforms and dozens of features. This slice builds **the citizen core only**. The operator dashboard, municipal dashboard, staff app, real payments, invoices, WhatsApp, passes, and AI features are deferred with named seams to attach to, see [docs/ROADMAP.md](docs/ROADMAP.md).
 
 Do not build ahead of the roadmap. An operator dashboard bolted on during Phase 4 will be built against a booking engine that is still changing shape.
 
-If a change looks like it needs work from a later phase, say so and stop — do not quietly expand the slice.
+If a change looks like it needs work from a later phase, say so and stop, do not quietly expand the slice.

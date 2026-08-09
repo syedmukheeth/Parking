@@ -11,14 +11,14 @@ export interface LiveCount {
 /**
  * Subscribes to availability for a bounded set of locations at once.
  *
- * Reuses the same per-location socket contract the badges use — snapshot
- * replaces, delta triggers a re-request — rather than inventing a bulk
+ * Reuses the same per-location socket contract the badges use, snapshot
+ * replaces, delta triggers a re-request, rather than inventing a bulk
  * channel. The caller is responsible for keeping the id list small
  * (MAX_LIVE_MARKERS); this hook opens one subscription per id.
  *
  * Returns counts keyed by location id. Ids with no data yet are simply absent,
  * so callers fall back to their server-rendered snapshot instead of rendering
- * a zero — a marker briefly claiming "0 free" would read as a full lot.
+ * a zero, a marker briefly claiming "0 free" would read as a full lot.
  */
 export function useLiveAvailability(locationIds: string[]): Record<string, LiveCount> {
   const [counts, setCounts] = useState<Record<string, LiveCount>>({});

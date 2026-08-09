@@ -1,6 +1,6 @@
 /**
- * Shaped by what the domain needs — createOrder / verifySignature / getStatus
- * — not by Razorpay's SDK surface, so the mock webhook payload can already be
+ * Shaped by what the domain needs - createOrder / verifySignature / getStatus
+ * - not by Razorpay's SDK surface, so the mock webhook payload can already be
  * Razorpay-shaped and the real adapter is a new file, not a refactor of
  * callers (docs/ARCHITECTURE.md §6).
  */

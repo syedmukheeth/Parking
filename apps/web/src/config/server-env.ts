@@ -2,7 +2,7 @@ import 'server-only';
 import { z } from 'zod';
 
 /**
- * Server-only secrets — never bundled to the client. `server-only` makes
+ * Server-only secrets - never bundled to the client. `server-only` makes
  * importing this from a Client Component a build error, not just a review
  * nit (parkap-frontend skill).
  */

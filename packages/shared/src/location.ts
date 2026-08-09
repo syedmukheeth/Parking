@@ -59,7 +59,7 @@ export type AvailabilityCount = z.infer<typeof availabilityCountSchema>;
 
 /**
  * A results-card view of a location. `priceFrom` is the cheapest hourly rate
- * across the location's slot types — enough to render a card, never enough to
+ * across the location's slot types - enough to render a card, never enough to
  * price a booking. Quotes come from POST /bookings/quote.
  */
 export const locationSummarySchema = z.object({
@@ -83,7 +83,7 @@ export const locationSummarySchema = z.object({
 export type LocationSummary = z.infer<typeof locationSummarySchema>;
 
 /**
- * A favourite is just a location the citizen saved — it reuses the results-card
+ * A favourite is just a location the citizen saved - it reuses the results-card
  * shape rather than defining a parallel one (CLAUDE.md §9). `priceFrom` and
  * `availability` carry the same display-only caveats they do in search results.
  */
@@ -124,7 +124,7 @@ export const slotTypeAvailabilitySchema = z.object({
 export type SlotTypeAvailability = z.infer<typeof slotTypeAvailabilitySchema>;
 
 /**
- * Computed from the database, never from the cache — this is the
+ * Computed from the database, never from the cache - this is the
  * reconciliation path that lets cache drift self-heal.
  */
 export const locationAvailabilitySchema = z.object({

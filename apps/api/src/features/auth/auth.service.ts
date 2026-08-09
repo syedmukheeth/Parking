@@ -29,7 +29,7 @@ interface OtpChallenge {
  * OTP challenge storage and phone verification live here, in the api, because
  * only the api touches Postgres (docs/ARCHITECTURE.md §3). apps/web calls
  * these endpoints server-side and mints the session cookie itself on success
- * — this service never issues a session token (docs/CLAUDE.md non-negotiable 7).
+ * - this service never issues a session token (docs/CLAUDE.md non-negotiable 7).
  */
 @Injectable()
 export class AuthService {
@@ -60,7 +60,7 @@ export class AuthService {
   }
 
   /** Verifies the code and registers the phone number on first success.
-   * Returns the domain User — never a token; the caller (web) mints the
+   * Returns the domain User - never a token; the caller (web) mints the
    * session. */
   async verifyOtp(input: VerifyOtpRequest): Promise<User> {
     const key = `otp:challenge:${input.requestId}`;

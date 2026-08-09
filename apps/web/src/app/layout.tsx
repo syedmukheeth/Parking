@@ -8,7 +8,7 @@ import { getSession, isDemoMode } from '@/lib/session';
 import './globals.css';
 
 /**
- * One family for the whole product. Inter's tabular figures are the reason —
+ * One family for the whole product. Inter's tabular figures are the reason -
  * availability counts and prices change constantly, and a proportional `1`
  * makes the number jitter every time a slot frees up.
  */
@@ -20,7 +20,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: {
-    default: `${t('app.name')} — ${t('app.tagline')}`,
+    default: `${t('app.name')} · ${t('app.tagline')}`,
     template: `%s · ${t('app.name')}`,
   },
   description: t('app.tagline'),

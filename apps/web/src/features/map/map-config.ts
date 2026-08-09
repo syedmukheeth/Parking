@@ -3,7 +3,7 @@ import type { StyleSpecification } from 'maplibre-gl';
 /**
  * Map configuration.
  *
- * No API key anywhere — which is why the map ships now instead of waiting on
+ * No API key anywhere, which is why the map ships now instead of waiting on
  * the Google Maps key that ROADMAP lists as blocked.
  *
  * ── Why raster and not vector ──────────────────────────────────────────────
@@ -12,7 +12,7 @@ import type { StyleSpecification } from 'maplibre-gl';
  * but *zero* `.pbf` tiles are ever requested, so the map renders its
  * background layer and nothing else. Cause: MapLibre decodes vector tiles in a
  * Web Worker, and that worker starts and immediately dies under the Next
- * bundler — markers and sprites keep working because they live on the main
+ * bundler, markers and sprites keep working because they live on the main
  * thread, which is what makes the failure look like a styling problem.
  *
  * Raster tiles are decoded as plain images on the main thread, so they sidesteep
@@ -56,7 +56,7 @@ export function buildMapStyle(devicePixelRatio: number): StyleSpecification {
   };
 }
 
-/** Andhra Pradesh, roughly centred — the default view before geolocation or a
+/** Andhra Pradesh, roughly centred, the default view before geolocation or a
  * search narrows it. */
 export const AP_CENTER: [number, number] = [80.6, 16.2];
 export const AP_DEFAULT_ZOOM = 6.4;
@@ -78,7 +78,7 @@ export const AP_BOUNDS: [[number, number], [number, number]] = [
  * Every subscribed marker is a room on the realtime gateway. Thirty-five
  * markers on screen would mean thirty-five subscriptions per tab, which is
  * how a realtime feature becomes a load problem. Markers outside this cap
- * render from their server snapshot, which is still accurate at page load —
+ * render from their server snapshot, which is still accurate at page load:
  * and no marker count authorises a booking regardless (CLAUDE.md).
  */
 export const MAX_LIVE_MARKERS = 20;

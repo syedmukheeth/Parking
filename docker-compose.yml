@@ -1,5 +1,5 @@
 # Describes the prod-like topology for Coolify/Dokploy deploy. Local dev does
-# NOT use this — dev runs `npm run dev` natively against a Neon dev branch and
+# NOT use this - dev runs `npm run dev` natively against a Neon dev branch and
 # Upstash Redis, no local Docker (parkap-devops skill). This is for the
 # hosting platform, not a `docker compose up` dev loop.
 services:

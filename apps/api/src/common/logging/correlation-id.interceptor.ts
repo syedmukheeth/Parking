@@ -9,7 +9,7 @@ interface RequestWithCorrelation extends Request {
 
 /**
  * Structured JSON access logs with a correlation id that propagates to jobs
- * and error logs. No `console.log` in shipped code — this is the one place
+ * and error logs. No `console.log` in shipped code - this is the one place
  * that logs the request lifecycle.
  */
 @Injectable()

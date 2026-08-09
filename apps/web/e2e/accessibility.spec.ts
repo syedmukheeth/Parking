@@ -4,7 +4,7 @@ import { expect, test } from '@playwright/test';
 /**
  * Automated accessibility audit over the public surface.
  *
- * axe catches roughly a third of real WCAG issues — it will not tell you a
+ * axe catches roughly a third of real WCAG issues, it will not tell you a
  * focus order is illogical or a label is misleading. Treat a clean run as the
  * floor, not the ceiling; the keyboard paths are asserted separately in
  * map-discovery.spec.ts and booking-a11y below.
@@ -34,7 +34,7 @@ test.describe('accessibility', () => {
         .exclude('.maplibregl-control-container')
         .analyze();
 
-      // Surface what actually failed rather than just a count — a bare
+      // Surface what actually failed rather than just a count, a bare
       // `toEqual([])` on a violation array is unreadable when it fails.
       const summary = results.violations.map((v) => `${v.id} (${v.nodes.length}): ${v.help}`);
       expect(summary, summary.join('\n')).toEqual([]);
@@ -53,8 +53,8 @@ test.describe('accessibility', () => {
       getComputedStyle(document.documentElement).getPropertyValue('--background').trim(),
     );
     // --pk-slate-50, the light canvas. A production build minifies the
-    // lightness channel to a percentage — `oklch(98.5% ...)` where the dev
-    // build emits `oklch(0.985 ...)` — so matching the raw string passes
+    // lightness channel to a percentage, `oklch(98.5% ...)` where the dev
+    // build emits `oklch(0.985 ...)`, so matching the raw string passes
     // against a dev server and fails against the deployed site, on a value
     // that never changed. Accept both spellings of the same colour.
     expect(background).toMatch(/oklch\(\s*(0\.985|98\.5%)/);

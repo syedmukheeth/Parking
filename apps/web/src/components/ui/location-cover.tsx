@@ -6,7 +6,7 @@ import type { LocationTag } from '@parkap/shared';
  *
  * Deliberately generated, not photographic. Every seeded lot is a real place in
  * Andhra Pradesh, and attaching stock imagery to a real address is a claim the
- * data doesn't support — it would survive into a stakeholder demo as though
+ * data doesn't support, it would survive into a stakeholder demo as though
  * someone had photographed the site. This renders a deterministic gradient
  * instead: same location, same art, every render and every machine.
  *
@@ -14,7 +14,7 @@ import type { LocationTag } from '@parkap/shared';
  * the same call sites; nothing else changes.
  */
 
-/** FNV-1a. Small, deterministic, and stable across machines — `Math.random`
+/** FNV-1a. Small, deterministic, and stable across machines, `Math.random`
  * or a date-seeded value would make the art flicker between renders. */
 function hashId(value: string): number {
   let hash = 2166136261;
@@ -52,7 +52,7 @@ export function LocationCover({
   className?: string;
 }) {
   const hash = hashId(locationId);
-  // Narrow band around the brand hue — the art should read as one family, not
+  // Narrow band around the brand hue: the art should read as one family, not
   // a rainbow of unrelated cards.
   const hue = 220 + (hash % 60);
   const secondHue = hue + 24;

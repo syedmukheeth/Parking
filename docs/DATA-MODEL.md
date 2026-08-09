@@ -6,9 +6,9 @@ Prisma schema design for ParkAP. Read this before touching `apps/api/prisma/sche
 
 ## Database: Postgres from day one
 
-Dev and prod both run **PostgreSQL** — Neon (a dev branch locally, main in prod). There is no SQLite step, so use Postgres properly. Four working rules:
+Dev and prod both run **PostgreSQL**: Neon (a dev branch locally, main in prod). There is no SQLite step, so use Postgres properly. Four working rules:
 
-### Rule 1 — Real Prisma `enum`s, mirrored in `packages/shared`
+### Rule 1: Real Prisma `enum`s, mirrored in `packages/shared`
 
 ```prisma
 enum BookingStatus { PENDING CONFIRMED ACTIVE COMPLETED CANCELLED EXPIRED }
@@ -23,9 +23,9 @@ export type BookingStatus = (typeof BOOKING_STATUS)[number];
 export const bookingStatusSchema = z.enum(BOOKING_STATUS);
 ```
 
-DB-level enforcement **and** boundary validation — both, not one or the other. Adding an enum value is a migration; treat it as a deliberate change.
+DB-level enforcement **and** boundary validation: both, not one or the other. Adding an enum value is a migration; treat it as a deliberate change.
 
-### Rule 2 — Tags: a join table, not a scalar array
+### Rule 2: Tags: a join table, not a scalar array
 
 Postgres supports `String[]`, but `LocationTag` stays a join table because it makes `?tag=ev_charging` an **indexed** lookup rather than an array scan, and keeps the tag vocabulary a typed union.
 
@@ -39,11 +39,11 @@ model LocationTag {
 }
 ```
 
-### Rule 3 — `Json` for opaque blobs only
+### Rule 3, `Json` for opaque blobs only
 
-Provider webhook payloads and audit snapshots are `Json` — read whole, never filtered. The moment you need to query a field, promote it to a real column with an index.
+Provider webhook payloads and audit snapshots are `Json`: read whole, never filtered. The moment you need to query a field, promote it to a real column with an index.
 
-### Rule 4 — Migrations, always
+### Rule 4: Migrations, always
 
 Every schema change ships as a committed `prisma migrate` migration. Never `prisma db push` against a shared Neon branch. CI runs `migrate deploy` on a per-PR Neon branch and fails on drift.
 
@@ -62,7 +62,7 @@ Operator ──< ParkingLocation ──< SlotType ──< Booking >── User
 ```
 
 ### User
-Citizen or staff account. Phone is the identity — email is optional because a large share of users will not have one.
+Citizen or staff account. Phone is the identity, email is optional because a large share of users will not have one.
 
 | Field | Type | Notes |
 |---|---|---|
@@ -76,7 +76,7 @@ Citizen or staff account. Phone is the identity — email is optional because a 
 Related: `Vehicle` (saved plates), `FavouriteLocation`.
 
 ### Operator
-The business running one or more lots. Present from the start even though the operator dashboard is deferred — retrofitting ownership onto locations later would touch every query.
+The business running one or more lots. Present from the start even though the operator dashboard is deferred, retrofitting ownership onto locations later would touch every query.
 
 `id`, `name`, `gstin?`, `contactPhone`, `contactEmail?`, `status` (`ACTIVE | SUSPENDED`).
 
@@ -88,7 +88,7 @@ A physical facility.
 | `id` | String cuid | |
 | `operatorId` | String | FK |
 | `name`, `address`, `city`, `district`, `pincode` | String | |
-| `lat`, `lng` | Float | **indexed together** — bounding-box prefilter |
+| `lat`, `lng` | Float | **indexed together**, bounding-box prefilter |
 | `photos` | Json | array of URLs, read whole, never filtered |
 | `openTime`, `closeTime` | String | `"HH:mm"`; `"00:00"`–`"23:59"` means 24h |
 | `is24x7` | Boolean | |
@@ -107,7 +107,7 @@ Capacity is per vehicle class, not per location. A lot with 100 car slots and 40
 | `slotClass` | String | `GENERAL \| COVERED \| WOMEN \| DISABLED \| EV` |
 | `capacity` | Int | total physical slots |
 
-`@@unique([locationId, vehicleType, slotClass])`. Capacity lives here and nowhere else — a `totalCapacity` field on `ParkingLocation` would be a denormalisation that drifts.
+`@@unique([locationId, vehicleType, slotClass])`. Capacity lives here and nowhere else, a `totalCapacity` field on `ParkingLocation` would be a denormalisation that drifts.
 
 ### PricingRule
 Resolved by the pricing engine for a requested window.
@@ -155,15 +155,15 @@ Issued on confirmation. Carries the QR.
 
 `bookingId` (unique), `token` (unique, signed, single-use), `issuedAt`, `expiresAt`, `usedAt?`, `checkedInAt?`, `checkedOutAt?`, `checkedInBy?`, `checkedOutBy?`.
 
-`usedAt` is what makes replay detectable — verification sets it in the same transaction that reads it.
+`usedAt` is what makes replay detectable, verification sets it in the same transaction that reads it.
 
 ### Payment
 `bookingId`, `provider` (`mock | razorpay`), `providerOrderId?`, `providerPaymentId?`, `amount` (paise), `status` (`CREATED | PENDING | SUCCESS | FAILED | REFUNDED`), `rawPayload` (Json, opaque), `paidAt?`.
 
-`rawPayload` is the audit trail. Store the provider's response verbatim — when a reconciliation dispute arrives months later, the derived fields will not be enough.
+`rawPayload` is the audit trail. Store the provider's response verbatim: when a reconciliation dispute arrives months later, the derived fields will not be enough.
 
 ### AvailabilitySnapshot
-Periodic occupancy rollup per location. Not used for booking decisions — it exists so the operator and municipal dashboards get historical occupancy charts without re-deriving them from the full booking table, and so the Phase 3 prediction model has training data from day one.
+Periodic occupancy rollup per location. Not used for booking decisions: it exists so the operator and municipal dashboards get historical occupancy charts without re-deriving them from the full booking table, and so the Phase 3 prediction model has training data from day one.
 
 `locationId`, `slotTypeId`, `capturedAt`, `occupied`, `available`.
 
@@ -191,7 +191,7 @@ PENDING ──payment success──▶ CONFIRMED ──QR check-in──▶ ACTI
    └──user cancels──▶ CANCELLED ◀┘
 ```
 
-Legal transitions are declared as data in `booking.service.ts` and enforced centrally. No service sets `status` by direct assignment — every change goes through the transition function. Otherwise the machine becomes decorative within a month.
+Legal transitions are declared as data in `booking.service.ts` and enforced centrally. No service sets `status` by direct assignment, every change goes through the transition function. Otherwise the machine becomes decorative within a month.
 
 ---
 
@@ -211,7 +211,7 @@ available = slotType.capacity
 Two details that are easy to get wrong:
 
 - **Overlap uses strict inequality on both sides.** A booking ending exactly at 14:00 does not conflict with one starting at 14:00. Using `<=` silently halves effective capacity at every hour boundary.
-- **Holds are counted from the cache, capacity from the database.** The cache can only ever make the system more conservative — a stale hold rejects a booking that could have succeeded, which is a recoverable annoyance. The reverse would be a double-booking, which is not.
+- **Holds are counted from the cache, capacity from the database.** The cache can only ever make the system more conservative: a stale hold rejects a booking that could have succeeded, which is a recoverable annoyance. The reverse would be a double-booking, which is not.
 
 Extensions re-run this check for the **added interval only**, never the whole window.
 
@@ -223,8 +223,8 @@ Extensions re-run this check for the **added interval only**, never the whole wi
 |---|---|
 | Money | integer **paise**, no floats, ever |
 | Timestamps | `DateTime` in **UTC**; formatting is the client's job |
-| Wall-clock times | `String` `"HH:mm"` — schedules have no timezone |
-| IDs | `cuid()` — sortable, non-guessable, no enumeration of bookings |
+| Wall-clock times | `String` `"HH:mm"`, schedules have no timezone |
+| IDs | `cuid()`: sortable, non-guessable, no enumeration of bookings |
 | Vehicle numbers | uppercase, whitespace stripped, at write time |
 | Phone | E.164 (`+91XXXXXXXXXX`) |
 | Deletes | soft via `status` for domain rows; hard deletes only through `onDelete: Cascade` on join tables |
@@ -233,20 +233,20 @@ Extensions re-run this check for the **added interval only**, never the whole wi
 
 ## Seed data
 
-`apps/api/prisma/seed.ts` creates realistic Andhra Pradesh locations — Tirupati temple lots, Vizag RK Beach, Vijayawada Benz Circle, Guntur, Araku, Srisailam — with plausible coordinates, capacity, pricing, and tags.
+`apps/api/prisma/seed.ts` creates realistic Andhra Pradesh locations: Tirupati temple lots, Vizag RK Beach, Vijayawada Benz Circle, Guntur, Araku, Srisailam - with plausible coordinates, capacity, pricing, and tags.
 
 Real place names matter more than they look. Demo data reading "Test Lot 1" makes a stakeholder review about the data instead of about the product, and it hides geo bugs that only appear with genuinely spread-out coordinates.
 
-Seed is **idempotent** — safe to re-run. `npm run db:reset` drops `dev.db` and rebuilds.
+Seed is **idempotent**, safe to re-run. `npm run db:reset` drops `dev.db` and rebuilds.
 
 ---
 
 ## Migrations & Neon workflow
 
-1. `DATABASE_URL` points at a **Neon branch** — a personal/dev branch locally, main in prod.
+1. `DATABASE_URL` points at a **Neon branch**: a personal/dev branch locally, main in prod.
 2. Schema change → `prisma migrate dev --name <change>` locally, commit the migration.
 3. CI runs `prisma migrate deploy` against a per-PR Neon branch; drift fails the build.
-4. Prod release runs `prisma migrate deploy` as a step before the app starts — never `migrate dev`.
+4. Prod release runs `prisma migrate deploy` as a step before the app starts, never `migrate dev`.
 
 Later performance work, once real volume justifies it (not now):
 - PostGIS for geo queries, replacing bbox+Haversine

@@ -5,7 +5,7 @@ import { DomainError } from '../errors/domain-error';
 /**
  * Validates a body/query/param against a Zod schema from @parkap/shared and
  * throws the same VALIDATION_FAILED shape everywhere. Every inbound boundary
- * uses this — never a bare `fetch`-shaped assumption about request shape.
+ * uses this - never a bare `fetch`-shaped assumption about request shape.
  */
 @Injectable()
 export class ZodValidationPipe implements PipeTransform {

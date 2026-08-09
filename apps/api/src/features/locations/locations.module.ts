@@ -7,7 +7,7 @@ import { LocationsService } from './locations.service';
   controllers: [LocationsController],
   providers: [LocationsService, LocationRepository],
   // LocationRepository is exported for RealtimeModule, which needs slot-type
-  // capacity without depending on BookingsModule (that would cycle — bookings
+  // capacity without depending on BookingsModule (that would cycle - bookings
   // already depends on realtime to publish deltas).
   exports: [LocationsService, LocationRepository],
 })

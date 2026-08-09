@@ -16,7 +16,7 @@ export class VehiclesService {
 
   /**
    * The citizen's first vehicle becomes their default whether or not they
-   * ticked the box — otherwise a one-vehicle account has nothing pre-selected
+   * ticked the box - otherwise a one-vehicle account has nothing pre-selected
    * at booking time, which is the whole point of saving it.
    */
   async create(userId: string, input: CreateVehicleRequest): Promise<Vehicle> {
@@ -32,7 +32,7 @@ export class VehiclesService {
   }
 
   /**
-   * Past bookings are unaffected — `Booking.vehicleNumber` is a plain column,
+   * Past bookings are unaffected - `Booking.vehicleNumber` is a plain column,
    * not a relation to this row (docs/DATA-MODEL.md), so history keeps rendering
    * the plate the citizen actually parked with.
    */

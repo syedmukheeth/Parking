@@ -7,13 +7,13 @@ import { TicketQr } from './parking-pass-qr';
 const LIVE_STATUSES = new Set(['CONFIRMED', 'ACTIVE']);
 
 /**
- * The digital parking pass — the thing a citizen holds up at the gate.
+ * The digital parking pass, the thing a citizen holds up at the gate.
  *
  * Shaped like a physical ticket on purpose: a stub with the details, a
  * perforation, and the QR. That structure is why it reads as a pass at a
  * glance in a queue rather than as another card in an app.
  *
- * The reservation id is deliberately prominent and monospaced-by-tabular —
+ * The reservation id is deliberately prominent and monospaced-by-tabular:
  * it's what a citizen reads aloud to a gate attendant when a scanner fails.
  */
 export function ParkingPass({ booking }: { booking: BookingDetail }) {

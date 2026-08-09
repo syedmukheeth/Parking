@@ -1,5 +1,5 @@
 /**
- * Wall-clock schedules ("HH:mm") have no timezone of their own — they are read
+ * Wall-clock schedules ("HH:mm") have no timezone of their own - they are read
  * as Andhra Pradesh local time (IST, UTC+5:30), the only timezone this service
  * operates in. The server clock (UTC) is authoritative; this only converts it
  * for comparison against the schedule strings.

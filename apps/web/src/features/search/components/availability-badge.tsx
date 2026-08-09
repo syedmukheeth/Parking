@@ -8,7 +8,7 @@ import { requestLocationSnapshot, subscribeToLocationAvailability } from '@/lib/
 /**
  * Starts from the server-rendered snapshot (no flash of empty state), then
  * replaces on `availability:snapshot` and merges on `availability:delta`.
- * The cached count is advisory — booking outcome always comes from the api
+ * The cached count is advisory, booking outcome always comes from the api
  * response, never this badge (parkap-frontend skill).
  */
 export function AvailabilityBadge({
@@ -35,7 +35,7 @@ export function AvailabilityBadge({
       },
       onDelta: () => {
         // A delta carries one slot type's count, not the location total, and
-        // this view only has the aggregate — ask for a fresh snapshot rather
+        // this view only has the aggregate, ask for a fresh snapshot rather
         // than guess at merging a partial number into it.
         requestLocationSnapshot(locationId);
       },

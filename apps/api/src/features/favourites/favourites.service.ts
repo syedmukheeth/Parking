@@ -6,7 +6,7 @@ import { FavouritesRepository } from './favourites.repository';
 
 /**
  * Saved locations (docs/ROADMAP.md Phase 12). Card shaping is delegated to
- * LocationsService rather than reimplemented — a service may call another
+ * LocationsService rather than reimplemented - a service may call another
  * service (CLAUDE.md conventions), and the availability/priceFrom caveats that
  * apply to a search card apply here unchanged: display only, never a booking
  * authorisation.
@@ -24,7 +24,7 @@ export class FavouritesService {
   }
 
   /**
-   * Rejects an unknown location before writing — the composite key would
+   * Rejects an unknown location before writing - the composite key would
    * otherwise happily store a favourite pointing at nothing, which only
    * surfaces later as a silently missing row in the list.
    */

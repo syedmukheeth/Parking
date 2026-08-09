@@ -8,7 +8,7 @@ import { LocationCard } from '@/features/search/components/location-card';
 export const metadata: Metadata = { title: t('favourites.title') };
 
 /**
- * Saved lots get their own route rather than a section buried in /profile —
+ * Saved lots get their own route rather than a section buried in /profile:
  * this is a repeat-use surface (home, work, college), not account settings.
  */
 export default async function SavedPage() {

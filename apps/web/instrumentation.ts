@@ -1,5 +1,5 @@
 /**
- * Next.js server-startup hook. Server-side Sentry only — no-ops when
+ * Next.js server-startup hook. Server-side Sentry only - no-ops when
  * SENTRY_DSN is unset (.env.example). Client/edge Sentry wiring is a
  * follow-up if the team wants full session-replay-style client monitoring;
  * this covers server errors and API-route/Server-Action traces, which is

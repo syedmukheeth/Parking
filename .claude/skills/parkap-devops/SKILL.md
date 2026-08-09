@@ -1,6 +1,6 @@
 ---
 name: parkap-devops
-description: DevOps, deployment, observability, and Git workflow for ParkAP — Neon Postgres, Upstash Redis, Docker, GitHub Actions CI/CD, Coolify deploy, env validation, Sentry + OpenTelemetry, logging, and commit/branch/PR conventions. Use when touching infra, CI, deployment, env config, monitoring, or defining Git process.
+description: DevOps, deployment, observability, and Git workflow for ParkAP: Neon Postgres, Upstash Redis, Docker, GitHub Actions CI/CD, Coolify deploy, env validation, Sentry + OpenTelemetry, logging, and commit/branch/PR conventions. Use when touching infra, CI, deployment, env config, monitoring, or defining Git process.
 ---
 
 # ParkAP DevOps
@@ -9,7 +9,7 @@ Infrastructure, delivery, and process. Cost discipline: see the global `cost-red
 
 ## Environments & managed infra
 
-No Docker on the dev machine — dev uses **managed cloud infra**, so dev and prod share provider behaviour:
+No Docker on the dev machine: dev uses **managed cloud infra**, so dev and prod share provider behaviour:
 
 | Service | Dev | Prod |
 |---|---|---|
@@ -17,13 +17,13 @@ No Docker on the dev machine — dev uses **managed cloud infra**, so dev and pr
 | Redis | Upstash | Upstash |
 | App hosting | local `npm run dev` | Coolify (self-hosted PaaS) or Dokploy |
 
-Neon branching gives each developer/PR an isolated Postgres branch — use a PR branch DB in CI, never the shared dev DB.
+Neon branching gives each developer/PR an isolated Postgres branch: use a PR branch DB in CI, never the shared dev DB.
 
 ## Environment variables
 
 - Single **Zod-validated** env schema per app, checked at boot; invalid/missing config crashes immediately, never runs degraded.
 - `.env.example` committed and complete; real `.env` gitignored.
-- Secrets (Neon URL, Upstash token, Razorpay keys, Better Auth secret, Sentry DSN, Resend/Novu/FCM keys) never in git — injected via Coolify/host secrets.
+- Secrets (Neon URL, Upstash token, Razorpay keys, Better Auth secret, Sentry DSN, Resend/Novu/FCM keys) never in git, injected via Coolify/host secrets.
 - The stub→real provider switches (`AUTH_PROVIDER`, `PAYMENT_PROVIDER`, `CACHE_DRIVER`) are env-driven; production must set real values and the API boot-guard enforces it.
 
 ## Docker (for deploy, not dev)
@@ -46,11 +46,11 @@ install → typecheck → lint → test (unit+integration on a Neon PR branch) �
 
 ## Observability
 
-- **Sentry** in web, api, worker — errors + performance traces, releases tagged with the git SHA, source maps uploaded.
-- **OpenTelemetry** — distributed traces spanning web → api → worker → DB; propagate the correlation id used in logs.
+- **Sentry** in web, api, worker: errors + performance traces, releases tagged with the git SHA, source maps uploaded.
+- **OpenTelemetry**, distributed traces spanning web → api → worker → DB; propagate the correlation id used in logs.
 - **Structured JSON logs** with request/correlation id, user id (never PII beyond id), and level. No `console.log` in shipped code.
 - Health endpoints: `/health` (liveness) and `/health/ready` (DB + Redis reachable) for the platform's checks.
-- Product analytics via PostHog (client + server) — separate from error monitoring.
+- Product analytics via PostHog (client + server), separate from error monitoring.
 
 ## Git workflow
 

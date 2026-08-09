@@ -1,14 +1,14 @@
 import type { QuoteLine } from '@parkap/shared';
 
 /**
- * Pure domain logic, framework-free — unit-tested in isolation (parkap-architecture).
+ * Pure domain logic, framework-free - unit-tested in isolation (parkap-architecture).
  *
  * Scoped to HOURLY billing for this MVP slice: the citizen booking flow always
  * prices a requested window off the highest-priority applicable HOURLY rule.
  * DAILY/MONTHLY rows exist in the schema for later modes (day passes, monthly
  * passes) but resolving "cheapest combination of modes" for an arbitrary
  * window is Proposal Phase 2 scope, not needed for Phase 1 acceptance
- * (docs/ROADMAP.md — scope discipline: don't build ahead of the roadmap).
+ * (docs/ROADMAP.md - scope discipline: don't build ahead of the roadmap).
  */
 
 export interface PricingRuleLike {
@@ -54,7 +54,7 @@ function isApplicable(rule: PricingRuleLike, at: Date): boolean {
 }
 
 /** Highest `priority` wins among rules applicable at the booking's start time
- * — festival/weekend pricing layers over base rates via priority alone, no
+ * - festival/weekend pricing layers over base rates via priority alone, no
  * schema change (docs/DATA-MODEL.md). */
 export function resolveHourlyRule(rules: PricingRuleLike[], at: Date): PricingRuleLike | undefined {
   return rules
@@ -84,7 +84,7 @@ export function quoteWindow(rules: PricingRuleLike[], startAt: Date, endAt: Date
   return { amount, breakdown };
 }
 
-/** Re-quotes only the added interval — an extension never re-prices the
+/** Re-quotes only the added interval - an extension never re-prices the
  * original window (docs/API-CONTRACT.md). */
 export function quoteExtension(
   rules: PricingRuleLike[],

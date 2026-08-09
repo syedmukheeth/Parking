@@ -10,8 +10,8 @@ const updateMany = vi.mocked(prisma.booking.updateMany);
 
 /**
  * The sweep must only ever touch PENDING rows whose hold has already elapsed.
- * A predicate that dropped either half would expire live holds — bookings a
- * citizen is mid-payment on — so the where-clause is what's asserted.
+ * A predicate that dropped either half would expire live holds - bookings a
+ * citizen is mid-payment on - so the where-clause is what's asserted.
  */
 describe('processHoldSweep', () => {
   beforeEach(() => {

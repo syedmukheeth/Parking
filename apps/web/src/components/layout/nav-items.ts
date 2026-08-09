@@ -6,7 +6,7 @@ import type { MessageKey } from '@/i18n/messages';
  * bar. Two hand-maintained lists is how the two surfaces drift apart.
  *
  * `authOnly` entries are hidden from signed-out visitors rather than shown and
- * bounced to sign-in — a nav item that always redirects is a dead end.
+ * bounced to sign-in, a nav item that always redirects is a dead end.
  */
 export interface NavItem {
   href: string;

@@ -11,7 +11,7 @@ export interface AuthenticatedRequest extends Request {
 
 /**
  * Verifies the session token apps/web forwards on protected routes. This is
- * the only place the api trusts a session — it never issues one itself
+ * the only place the api trusts a session - it never issues one itself
  * (docs/CLAUDE.md non-negotiable 7, docs/ARCHITECTURE.md §6).
  */
 @Injectable()

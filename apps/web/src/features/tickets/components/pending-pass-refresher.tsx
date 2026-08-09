@@ -13,7 +13,7 @@ const MAX_ATTEMPTS = 15;
  * (docs/ARCHITECTURE.md §2), so there is a real gap between a citizen tapping
  * pay and the pass existing. This page is a Server Component, so without this
  * the gap renders "awaiting payment" and stays that way until a manual reload
- * — the booking silently looks unpaid on the screen that exists to prove it is.
+ *, the booking silently looks unpaid on the screen that exists to prove it is.
  *
  * Bounded rather than indefinite: if the worker is genuinely down, a page that
  * polls forever hides the failure instead of surfacing it.

@@ -55,7 +55,7 @@ export class LocationRepository {
     return this.prisma.parkingLocation.findUnique({ where: { id }, include: CANDIDATE_INCLUDE });
   }
 
-  /** One query for a known set of ids — the favourites list would otherwise
+  /** One query for a known set of ids - the favourites list would otherwise
    * fan out to one `findById` per saved location. */
   async findByIds(ids: string[]): Promise<LocationCandidate[]> {
     if (ids.length === 0) return [];
@@ -65,7 +65,7 @@ export class LocationRepository {
     });
   }
 
-  /** Minimal projection for the realtime feature — avoids RealtimeModule
+  /** Minimal projection for the realtime feature - avoids RealtimeModule
    * depending on BookingsModule's repository, which would create a cycle
    * (bookings already depends on realtime to publish deltas). */
   async findSlotTypeCapacity(
@@ -78,7 +78,7 @@ export class LocationRepository {
   }
 
   /**
-   * Occupied count "right now" per slot type, in one grouped query — never one
+   * Occupied count "right now" per slot type, in one grouped query - never one
    * query per location. Used for the results-card availability badge and the
    * detail/availability endpoints. This is a read, not the transactional
    * capacity check that guards a real reservation (docs/DATA-MODEL.md).

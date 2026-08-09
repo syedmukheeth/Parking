@@ -13,7 +13,7 @@ const DEFAULT_JOB_OPTIONS = {
 // Queue's NameType (and DataType) parameters default to a conditional type
 // computed from DataTypeOrJob (`ExtractNameType<DataTypeOrJob, Default>`).
 // Inside a generic class, `T` is an unresolved type parameter, so TypeScript
-// can't evaluate that conditional and treats it as opaque — a plain `string`
+// can't evaluate that conditional and treats it as opaque - a plain `string`
 // then fails to satisfy it even though every concrete instantiation resolves
 // to `string`. Supplying all six type arguments explicitly bypasses the
 // conditionals instead of relying on their defaults.
@@ -27,7 +27,7 @@ export class BullMqJobQueue<T extends object> implements JobQueue<T>, OnModuleDe
     private readonly queueName: string,
     redisUrl: string,
   ) {
-    // BullMQ requires this on the ioredis connection it's handed — without it,
+    // BullMQ requires this on the ioredis connection it's handed - without it,
     // blocking commands (used internally for job polling) fail under retry.
     this.connection = new IORedis(redisUrl, { maxRetriesPerRequest: null });
     this.queue = new Queue<T, void, string, T, void, string>(queueName, { connection: this.connection });

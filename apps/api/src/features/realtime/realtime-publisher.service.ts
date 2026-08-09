@@ -6,7 +6,7 @@ import { RealtimeGateway } from './realtime.gateway';
 
 /**
  * The one place BookingsService/TicketsService reach to push realtime
- * events — they never touch the gateway's Socket.IO server directly. Imports
+ * events - they never touch the gateway's Socket.IO server directly. Imports
  * LocationRepository (from LocationsModule) to recompute the delta; never
  * BookingRepository, which would create a cycle since bookings already
  * depends on this module.
