@@ -23,7 +23,10 @@ const nextConfig: NextConfig = {
   // Self-contained server bundle for the Docker runtime stage — copies only
   // the traced dependency subset, not the whole monorepo node_modules
   // (docs/ARCHITECTURE.md §2, parkap-devops skill).
-  output: 'standalone',
+  //
+  // Vercel does its own tracing and asks that standalone be left off; setting
+  // it there produces a build that emits a server it will never run.
+  output: process.env.VERCEL ? undefined : 'standalone',
 };
 
 export default nextConfig;

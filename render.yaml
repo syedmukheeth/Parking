@@ -1,0 +1,75 @@
+# Render Blueprint — apps/api and apps/worker.
+#
+# Render → Blueprints → New Blueprint Instance → pick this repo. Render reads
+# this file and creates both services plus the shared env group; the values
+# marked `sync: false` are prompted for on creation and stored per-service.
+#
+# apps/web is NOT here — it deploys to Vercel (docs/DEPLOYMENT.md).
+#
+# Both services build from the repo root as Docker context, because npm
+# workspaces need the whole tree to resolve @parkap/shared.
+#
+# Cost note: Render has no free tier for background workers, so parkap-worker
+# needs a paid instance. Without it, bookings stay PENDING forever — the
+# PENDING → CONFIRMED transition happens in a BullMQ job.
+
+services:
+  - type: web
+    name: parkap-api
+    runtime: docker
+    plan: starter
+    region: singapore
+    dockerfilePath: ./apps/api/Dockerfile
+    dockerContext: .
+    # Liveness, not readiness. Pointing this at /health/ready means a brief
+    # Upstash blip restarts a perfectly healthy container.
+    healthCheckPath: /health
+    envVars:
+      - fromGroup: parkap-shared
+      # Render assigns PORT; the api reads it when API_PORT is unset. Do not
+      # set API_PORT here — doing so makes the service unreachable.
+      - key: API_CORS_ORIGINS
+        sync: false # the Vercel web origin, e.g. https://parkap.vercel.app
+      - key: BETTER_AUTH_SECRET
+        sync: false # must match the value set in the Vercel project
+      - key: BOOKING_HOLD_TTL_MINUTES
+        value: 10
+      - key: SENTRY_DSN
+        sync: false
+
+  - type: worker
+    name: parkap-worker
+    runtime: docker
+    plan: starter
+    region: singapore
+    dockerfilePath: ./apps/worker/Dockerfile
+    dockerContext: .
+    envVars:
+      - fromGroup: parkap-shared
+      - key: WORKER_CONCURRENCY
+        value: 5
+      - key: SENTRY_DSN
+        sync: false
+
+envVarGroups:
+  # Everything both services must agree on. TICKET_TOKEN_SECRET especially:
+  # the api signs QR tokens with it and the worker verifies them, so a
+  # mismatch issues tickets that fail at the gate. A shared group makes
+  # disagreement impossible.
+  - name: parkap-shared
+    envVars:
+      # `development`, deliberately. The api refuses to boot under
+      # NODE_ENV=production while only the stub OTP and mock payment
+      # providers exist — and that guard is correct. See docs/DEPLOYMENT.md
+      # for what running this way means: OTP 123456 works for every phone
+      # number. Demo-safe, not citizen-safe.
+      - key: NODE_ENV
+        value: development
+      - key: DATABASE_URL
+        sync: false # Neon POOLED connection string
+      - key: DIRECT_URL
+        sync: false # Neon UNPOOLED — migrations only
+      - key: REDIS_URL
+        sync: false # Upstash, rediss://
+      - key: TICKET_TOKEN_SECRET
+        sync: false # 32+ chars
