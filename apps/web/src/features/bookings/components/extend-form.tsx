@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useState, useTransition } from 'react';
 import { formatINR } from '@/lib/format';
-import { t } from '@/i18n/messages';
+import { t, tf } from '@/i18n/messages';
 import { extendBooking } from '@/features/booking/actions';
 
 export function ExtendForm({ bookingId, currentEndAt }: { bookingId: string; currentEndAt: string }) {
@@ -19,11 +19,14 @@ export function ExtendForm({ bookingId, currentEndAt }: { bookingId: string; cur
       const result = await extendBooking(bookingId, new Date(newEndAt).toISOString());
       if (!result.ok) {
         // SLOT_UNAVAILABLE is a normal outcome for an extension, not an error
-        // state (docs/API-CONTRACT.md) — worded accordingly either way.
+        // state (docs/API-CONTRACT.md), worded accordingly either way.
         setMessage({ kind: 'error', text: result.error });
         return;
       }
-      setMessage({ kind: 'success', text: `Extended — new total ${formatINR(result.data.payment.amount)} added.` });
+      setMessage({
+        kind: 'success',
+        text: tf('ticket.extended', { amount: formatINR(result.data.payment.amount) }),
+      });
       router.refresh();
     });
   }

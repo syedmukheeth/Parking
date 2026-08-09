@@ -1,4 +1,6 @@
-import { t } from '@/i18n/messages';
+import { ChevronDown } from 'lucide-react';
+import type { VehicleType } from '@parkap/shared';
+import { t, type MessageKey } from '@/i18n/messages';
 import { GeolocateButton } from './geolocate-button';
 
 interface SearchFiltersProps {
@@ -11,16 +13,35 @@ interface SearchFiltersProps {
   sort?: string;
 }
 
-/** A GET form — filtering works via URL search params with no client JS
- * required, per Server-Components-by-default (parkap-frontend skill). Only
- * "use my location" needs a Client Component. */
+const VEHICLE_TYPES: VehicleType[] = ['CAR', 'BIKE', 'EV_CAR', 'EV_BIKE', 'BUS'];
+const SORTS = [
+  { value: 'distance', key: 'search.sort.distance' },
+  { value: 'price', key: 'search.sort.price' },
+  { value: 'availability', key: 'search.sort.availability' },
+] satisfies { value: string; key: MessageKey }[];
+
+/** One height for every control on the row. Mixed intrinsic heights across an
+ * input, two selects and two buttons is what makes a filter bar look assembled
+ * rather than designed. */
+const CONTROL = 'h-10 rounded-sm border border-input bg-background px-3 text-small';
+
+/**
+ * A GET form: filtering works through URL search params with no client JS,
+ * per Server-Components-by-default (parkap-frontend skill). Only "use my
+ * location" needs a Client Component.
+ *
+ * The selects stay native. `appearance-none` plus an overlaid chevron restyles
+ * the closed state while the open state remains the platform picker, which on
+ * a phone is a far better control than any div-based menu, and which keeps
+ * keyboard and screen-reader behaviour for free.
+ */
 export function SearchFilters(props: SearchFiltersProps) {
   return (
-    <form action="/search" className="flex flex-wrap items-end gap-3">
+    <form action="/search" className="flex flex-wrap items-center gap-2">
       {props.lat ? <input type="hidden" name="lat" value={props.lat} /> : null}
       {props.lng ? <input type="hidden" name="lng" value={props.lng} /> : null}
 
-      <div className="min-w-48 flex-1">
+      <div className="min-w-52 flex-1">
         <label htmlFor="q" className="sr-only">
           {t('home.searchPlaceholder')}
         </label>
@@ -30,60 +51,99 @@ export function SearchFilters(props: SearchFiltersProps) {
           type="search"
           defaultValue={props.q}
           placeholder={t('home.searchPlaceholder')}
-          className="w-full rounded-sm border border-input bg-background px-3 py-2"
+          className={`${CONTROL} w-full`}
         />
       </div>
 
-      <div>
-        <label htmlFor="vehicleType" className="sr-only">
-          {t('search.filters.vehicleType')}
-        </label>
-        <select
-          id="vehicleType"
-          name="vehicleType"
-          defaultValue={props.vehicleType ?? ''}
-          className="rounded-sm border border-input bg-background px-3 py-2"
-        >
-          <option value="">{t('search.filters.vehicleType')}</option>
-          <option value="CAR">Car</option>
-          <option value="BIKE">Bike</option>
-          <option value="EV_CAR">EV car</option>
-          <option value="EV_BIKE">EV bike</option>
-          <option value="BUS">Bus</option>
-        </select>
-      </div>
+      <SelectField
+        id="vehicleType"
+        name="vehicleType"
+        label={t('search.filters.vehicleType')}
+        defaultValue={props.vehicleType ?? ''}
+      >
+        <option value="">{t('search.filters.vehicleType')}</option>
+        {VEHICLE_TYPES.map((vehicle) => (
+          <option key={vehicle} value={vehicle}>
+            {t(`vehicle.${vehicle}` as MessageKey)}
+          </option>
+        ))}
+      </SelectField>
 
-      <div>
-        <label htmlFor="sort" className="sr-only">
-          {t('search.filters.sort')}
-        </label>
-        <select
-          id="sort"
-          name="sort"
-          defaultValue={props.sort ?? 'distance'}
-          className="rounded-sm border border-input bg-background px-3 py-2"
-        >
-          <option value="distance">{t('search.sort.distance')}</option>
-          <option value="price">{t('search.sort.price')}</option>
-          <option value="availability">{t('search.sort.availability')}</option>
-        </select>
-      </div>
+      <SelectField
+        id="sort"
+        name="sort"
+        label={t('search.filters.sort')}
+        defaultValue={props.sort ?? 'distance'}
+      >
+        {SORTS.map((sort) => (
+          <option key={sort.value} value={sort.value}>
+            {t(sort.key)}
+          </option>
+        ))}
+      </SelectField>
 
-      <label className="flex items-center gap-2 py-2 text-small">
-        <input type="checkbox" name="availableOnly" value="true" defaultChecked={props.availableOnly === 'true'} />
-        {t('search.filters.availableOnly')}
-      </label>
-
-      <label className="flex items-center gap-2 py-2 text-small">
-        <input type="checkbox" name="openNow" value="true" defaultChecked={props.openNow === 'true'} />
-        {t('search.filters.openNow')}
-      </label>
+      <ToggleChip name="availableOnly" label={t('search.filters.availableOnly')} checked={props.availableOnly === 'true'} />
+      <ToggleChip name="openNow" label={t('search.filters.openNow')} checked={props.openNow === 'true'} />
 
       <GeolocateButton />
 
-      <button type="submit" className="rounded-sm bg-primary px-4 py-2 font-medium text-primary-foreground">
+      <button type="submit" className={`${CONTROL} bg-primary px-4 font-medium text-primary-foreground`}>
         {t('home.searchCta')}
       </button>
     </form>
+  );
+}
+
+function SelectField({
+  id,
+  name,
+  label,
+  defaultValue,
+  children,
+}: {
+  id: string;
+  name: string;
+  label: string;
+  defaultValue: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <div className="relative">
+      <label htmlFor={id} className="sr-only">
+        {label}
+      </label>
+      <select
+        id={id}
+        name={name}
+        defaultValue={defaultValue}
+        className={`${CONTROL} appearance-none pr-9`}
+      >
+        {children}
+      </select>
+      <ChevronDown
+        aria-hidden="true"
+        size={16}
+        className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground"
+      />
+    </div>
+  );
+}
+
+/**
+ * A real checkbox styled as a chip. `peer-checked` drives the appearance, so
+ * the control keeps its native keyboard behaviour, its focus ring and its
+ * announcement as a checkbox, and it still submits inside a plain GET form
+ * with JavaScript switched off.
+ */
+function ToggleChip({ name, label, checked }: { name: string; label: string; checked: boolean }) {
+  return (
+    <label className="cursor-pointer">
+      <input type="checkbox" name={name} value="true" defaultChecked={checked} className="peer sr-only" />
+      <span
+        className={`${CONTROL} inline-flex items-center bg-transparent text-muted-foreground transition-colors peer-hover:border-primary peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-primary peer-checked:border-primary peer-checked:bg-primary-subtle peer-checked:text-primary-subtle-foreground`}
+      >
+        {label}
+      </span>
+    </label>
   );
 }

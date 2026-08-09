@@ -18,50 +18,71 @@ const STEPS: { icon: typeof Search; titleKey: MessageKey; bodyKey: MessageKey }[
  * real seeded lots with live availability, not a screenshot. It is the single
  * most convincing thing on the page precisely because it is the actual app.
  *
- * Every claim here is one the build can support today — no ANPR, no FASTag, no
+ * Every claim here is one the build can support today: no ANPR, no FASTag, no
  * "AI-powered" anything. Those are named as future modules in docs/ROADMAP.md
  * and stay off the marketing surface until they exist.
  */
 export function Landing({ locations, cities }: { locations: LocationSummary[]; cities: string[] }) {
+  const freeSpaces = locations.reduce((total, location) => total + location.availability.available, 0);
+
   return (
     <main className="flex flex-col">
       {/* ── Hero ────────────────────────────────────────────────────────── */}
-      <section className="mx-auto flex w-full max-w-4xl flex-col items-start gap-6 px-4 py-16 sm:px-6 lg:py-24">
-        <h1 className="text-display max-w-3xl text-balance">{t('landing.heroTitle')}</h1>
-        <p className="max-w-xl text-body text-muted-foreground">{t('landing.heroBody')}</p>
-        <div className="flex flex-wrap gap-3">
-          <Link
-            href="/search"
-            className="inline-flex items-center gap-2 rounded-sm bg-primary px-6 py-3 font-medium text-primary-foreground"
-          >
-            {t('landing.heroCta')}
-            <ArrowRight aria-hidden="true" size={18} />
-          </Link>
-          <Link href="/sign-in" className="rounded-sm border border-border px-6 py-3 font-medium">
-            {t('nav.signIn')}
-          </Link>
+      {/* Copy and product side by side. The map is the argument: a paragraph
+        * claiming live availability is worth less than a map showing it, and
+        * the previous layout left this half of the fold empty and put the map
+        * three screens down where nobody scrolled to it. */}
+      <section className="mx-auto w-full max-w-6xl px-4 pb-12 pt-10 sm:px-6 lg:pt-16">
+        <div className="grid items-center gap-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)]">
+          <div className="flex flex-col items-start gap-5">
+            <h1 className="text-display text-balance">{t('landing.heroTitle')}</h1>
+            <p className="max-w-md text-body text-muted-foreground">{t('landing.heroBody')}</p>
+
+            <div className="flex flex-wrap gap-3">
+              <Link
+                href="/search"
+                className="inline-flex items-center gap-2 rounded-sm bg-primary px-6 py-3 font-medium text-primary-foreground"
+              >
+                {t('landing.heroCta')}
+                <ArrowRight aria-hidden="true" size={18} />
+              </Link>
+              <Link href="/sign-in" className="rounded-sm border border-border px-6 py-3 font-medium">
+                {t('nav.signIn')}
+              </Link>
+            </div>
+
+            {/* Counted from the same payload that draws the markers, so the
+              * numbers cannot drift from what the map shows. */}
+            <dl className="mt-2 flex flex-wrap gap-x-8 gap-y-3 border-t border-border pt-5">
+              {[
+                { value: locations.length, label: t('landing.stat.lots') },
+                { value: freeSpaces, label: t('landing.stat.spaces') },
+                { value: cities.length, label: t('landing.stat.cities') },
+              ].map((stat) => (
+                // `dt` before `dd` is what the spec allows inside a wrapping
+                // div, so the visual order is flipped in CSS, not in the DOM.
+                <div key={stat.label} className="flex flex-col-reverse">
+                  <dt className="mt-1 text-caption text-muted-foreground">{stat.label}</dt>
+                  <dd className="tabular m-0 text-h2 leading-none">{stat.value.toLocaleString('en-IN')}</dd>
+                </div>
+              ))}
+            </dl>
+          </div>
+
+          <figure className="m-0 flex flex-col gap-2">
+            <div className="h-[300px] overflow-hidden rounded-xl border border-border shadow-[var(--shadow-lg)] sm:h-[380px] lg:h-[460px]">
+              <LazyMap locations={locations} className="h-full w-full" />
+            </div>
+            <figcaption className="text-caption text-muted-foreground">{t('landing.mapCaption')}</figcaption>
+          </figure>
         </div>
       </section>
 
       {/* ── The problem ─────────────────────────────────────────────────── */}
       <section className="border-y border-border bg-card">
-        <div className="mx-auto flex w-full max-w-4xl flex-col gap-3 px-4 py-16 sm:px-6">
-          <p className="text-caption font-semibold uppercase tracking-wider text-muted-foreground">
-            {t('landing.problem.eyebrow')}
-          </p>
-          <h2 className="text-h1 max-w-2xl text-balance">{t('landing.problem.title')}</h2>
-          <p className="max-w-xl text-body text-muted-foreground">{t('landing.problem.body')}</p>
-        </div>
-      </section>
-
-      {/* ── Live map ────────────────────────────────────────────────────── */}
-      <section className="mx-auto w-full max-w-6xl px-4 py-16 sm:px-6">
-        <div className="mb-6 flex flex-col gap-2">
-          <h2 className="text-h1">{t('landing.live.title')}</h2>
-          <p className="max-w-xl text-body text-muted-foreground">{t('landing.live.body')}</p>
-        </div>
-        <div className="h-[420px] overflow-hidden rounded-xl border border-border shadow-[var(--shadow-lg)]">
-          <LazyMap locations={locations} className="h-full w-full" />
+        <div className="mx-auto flex w-full max-w-6xl flex-col gap-4 px-4 py-14 sm:px-6 lg:flex-row lg:items-baseline lg:gap-12">
+          <h2 className="text-h1 text-balance lg:flex-1">{t('landing.problem.title')}</h2>
+          <p className="text-body text-muted-foreground lg:flex-1">{t('landing.problem.body')}</p>
         </div>
       </section>
 

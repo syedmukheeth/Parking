@@ -28,7 +28,10 @@ export const messages = {
     'landing.heroBody':
       'Live availability at parking across Andhra Pradesh. Compare prices, reserve a space, and drive straight to it.',
     'landing.heroCta': 'Find parking',
-    'landing.problem.eyebrow': 'The problem',
+    'landing.stat.lots': 'lots live',
+    'landing.stat.spaces': 'spaces free now',
+    'landing.stat.cities': 'cities',
+    'landing.mapCaption': 'Live availability, updating as you watch.',
     'landing.problem.title': 'Circling for a space is the worst part of the trip.',
     'landing.problem.body':
       'Ten minutes hunting a full lot, then a longer walk than you planned. The space existed, you just could not see it from the road.',
@@ -110,7 +113,7 @@ export const messages = {
     'search.resultsSheet': 'Parking results',
     'search.filters': 'Filters',
 
-    // Amenity tags — the enum values are storage keys, never shown raw.
+    // Amenity tags - the enum values are storage keys, never shown raw.
     'tag.cctv': 'CCTV',
     'tag.security': 'Security',
     'tag.ev_charging': 'EV charging',
@@ -251,6 +254,7 @@ export const messages = {
     'booking.holdNotice': 'Your space is held while you pay.',
     'booking.noSlotTypes': 'No spaces are configured at this location yet.',
     'booking.fillEveryField': 'Fill in every field. The end time must be after the start time.',
+    'ticket.extended': 'Extension confirmed. {amount} added to your total.',
   },
   te: {},
 } satisfies Record<Locale, Partial<Record<string, string>>>;
@@ -260,4 +264,22 @@ export type MessageKey = keyof (typeof messages)['en'];
 export function t(key: MessageKey, locale: Locale = 'en'): string {
   const catalog = messages[locale] as Partial<Record<MessageKey, string>>;
   return catalog[key] ?? messages.en[key];
+}
+
+/**
+ * `t` with `{placeholder}` substitution.
+ *
+ * Values go in placeholders rather than being concatenated onto a prefix
+ * string, because Telugu does not put them where English does. A message split
+ * into "Extension confirmed." + amount + "added" is untranslatable by
+ * construction; one string with a slot is not.
+ */
+export function tf(
+  key: MessageKey,
+  params: Record<string, string | number>,
+  locale: Locale = 'en',
+): string {
+  return t(key, locale).replace(/\{(\w+)\}/g, (match, name: string) =>
+    name in params ? String(params[name]) : match,
+  );
 }
