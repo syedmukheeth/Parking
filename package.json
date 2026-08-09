@@ -5,7 +5,7 @@
   "description": "ParkAP - Andhra Pradesh Smart Parking Platform (MVP)",
   "packageManager": "npm@11.8.0",
   "engines": {
-    "node": ">=22"
+    "node": ">=22 <23"
   },
   "workspaces": [
     "apps/*",
