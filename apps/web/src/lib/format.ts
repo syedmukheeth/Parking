@@ -3,10 +3,17 @@
  * in the browser — only display formatting, here, at the edge
  * (parkap-frontend skill).
  */
+/**
+ * Whole rupees render without decimals — parking tariffs are round numbers and
+ * "₹20.00/hr" reads like a bank statement. Paise still show when they exist,
+ * which they do on GST-inclusive totals.
+ */
 export function formatINR(paise: number): string {
+  const hasPaise = paise % 100 !== 0;
   return new Intl.NumberFormat('en-IN', {
     style: 'currency',
     currency: 'INR',
+    minimumFractionDigits: hasPaise ? 2 : 0,
     maximumFractionDigits: 2,
   }).format(paise / 100);
 }

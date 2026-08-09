@@ -28,7 +28,7 @@ export function CancelButton({ bookingId }: { bookingId: string }) {
       <button
         type="button"
         onClick={() => setConfirming(true)}
-        className="text-sm text-[var(--color-danger)] underline underline-offset-2"
+        className="text-small text-destructive underline underline-offset-2"
       >
         {t('ticket.cancelBooking')}
       </button>
@@ -37,9 +37,9 @@ export function CancelButton({ bookingId }: { bookingId: string }) {
 
   return (
     <div className="flex flex-col gap-2">
-      <p className="text-sm">Are you sure you want to cancel this booking?</p>
+      <p className="text-small">Are you sure you want to cancel this booking?</p>
       {error ? (
-        <p role="alert" className="text-sm text-[var(--color-danger)]">
+        <p role="alert" className="text-small text-destructive">
           {error}
         </p>
       ) : null}
@@ -47,7 +47,7 @@ export function CancelButton({ bookingId }: { bookingId: string }) {
         <button
           type="button"
           onClick={() => setConfirming(false)}
-          className="rounded-md border border-[var(--color-border)] px-3 py-1.5 text-sm"
+          className="rounded-sm border border-border px-3 py-1.5 text-small"
         >
           {t('common.cancel')}
         </button>
@@ -55,7 +55,7 @@ export function CancelButton({ bookingId }: { bookingId: string }) {
           type="button"
           onClick={handleCancel}
           disabled={isPending}
-          className="rounded-md bg-[var(--color-danger)] px-3 py-1.5 text-sm font-medium text-white disabled:opacity-60"
+          className="rounded-sm bg-destructive px-3 py-1.5 text-small font-medium text-destructive-foreground disabled:opacity-60"
         >
           {isPending ? t('common.loading') : t('common.confirm')}
         </button>

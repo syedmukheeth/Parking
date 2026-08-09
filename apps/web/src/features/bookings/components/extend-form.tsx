@@ -29,8 +29,8 @@ export function ExtendForm({ bookingId, currentEndAt }: { bookingId: string; cur
   }
 
   return (
-    <div className="flex flex-col gap-2 border-t border-[var(--color-border)] pt-3">
-      <label htmlFor="newEndAt" className="text-sm font-medium">
+    <div className="flex flex-col gap-2 border-t border-border pt-3">
+      <label htmlFor="newEndAt" className="text-small font-medium">
         {t('ticket.newEndTime')}
       </label>
       <div className="flex gap-2">
@@ -40,13 +40,13 @@ export function ExtendForm({ bookingId, currentEndAt }: { bookingId: string; cur
           value={newEndAt}
           min={currentEndAt.slice(0, 16)}
           onChange={(e) => setNewEndAt(e.target.value)}
-          className="flex-1 rounded-md border border-[var(--color-border)] bg-transparent px-3 py-2"
+          className="flex-1 rounded-sm border border-input bg-background px-3 py-2"
         />
         <button
           type="button"
           onClick={handleSubmit}
           disabled={isPending || !newEndAt}
-          className="rounded-md border border-[var(--color-brand)] px-4 py-2 text-sm font-medium text-[var(--color-brand)] disabled:opacity-60"
+          className="rounded-sm border border-primary px-4 py-2 text-small font-medium text-primary disabled:opacity-60"
         >
           {isPending ? t('common.loading') : t('ticket.extend')}
         </button>
@@ -54,7 +54,7 @@ export function ExtendForm({ bookingId, currentEndAt }: { bookingId: string; cur
       {message ? (
         <p
           role={message.kind === 'error' ? 'alert' : 'status'}
-          className={`text-sm ${message.kind === 'error' ? 'text-[var(--color-danger)]' : 'text-[var(--color-success)]'}`}
+          className={`text-small ${message.kind === 'error' ? 'text-destructive' : 'text-success'}`}
         >
           {message.text}
         </p>

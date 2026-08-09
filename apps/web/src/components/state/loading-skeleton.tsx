@@ -4,7 +4,7 @@ export function LoadingSkeleton({ rows = 3 }: { rows?: number }) {
       {Array.from({ length: rows }, (_, i) => (
         <div
           key={i}
-          className="h-20 animate-pulse rounded-lg bg-[var(--color-surface)] motion-reduce:animate-none"
+          className="h-20 animate-pulse rounded-lg bg-secondary motion-reduce:animate-none"
         />
       ))}
     </div>

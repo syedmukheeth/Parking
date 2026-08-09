@@ -30,7 +30,7 @@ export function SearchFilters(props: SearchFiltersProps) {
           type="search"
           defaultValue={props.q}
           placeholder={t('home.searchPlaceholder')}
-          className="w-full rounded-md border border-[var(--color-border)] bg-transparent px-3 py-2"
+          className="w-full rounded-sm border border-input bg-background px-3 py-2"
         />
       </div>
 
@@ -42,7 +42,7 @@ export function SearchFilters(props: SearchFiltersProps) {
           id="vehicleType"
           name="vehicleType"
           defaultValue={props.vehicleType ?? ''}
-          className="rounded-md border border-[var(--color-border)] bg-transparent px-3 py-2"
+          className="rounded-sm border border-input bg-background px-3 py-2"
         >
           <option value="">{t('search.filters.vehicleType')}</option>
           <option value="CAR">Car</option>
@@ -61,7 +61,7 @@ export function SearchFilters(props: SearchFiltersProps) {
           id="sort"
           name="sort"
           defaultValue={props.sort ?? 'distance'}
-          className="rounded-md border border-[var(--color-border)] bg-transparent px-3 py-2"
+          className="rounded-sm border border-input bg-background px-3 py-2"
         >
           <option value="distance">{t('search.sort.distance')}</option>
           <option value="price">{t('search.sort.price')}</option>
@@ -69,19 +69,19 @@ export function SearchFilters(props: SearchFiltersProps) {
         </select>
       </div>
 
-      <label className="flex items-center gap-2 py-2 text-sm">
+      <label className="flex items-center gap-2 py-2 text-small">
         <input type="checkbox" name="availableOnly" value="true" defaultChecked={props.availableOnly === 'true'} />
         {t('search.filters.availableOnly')}
       </label>
 
-      <label className="flex items-center gap-2 py-2 text-sm">
+      <label className="flex items-center gap-2 py-2 text-small">
         <input type="checkbox" name="openNow" value="true" defaultChecked={props.openNow === 'true'} />
         {t('search.filters.openNow')}
       </label>
 
       <GeolocateButton />
 
-      <button type="submit" className="rounded-md bg-[var(--color-brand)] px-4 py-2 font-medium text-white">
+      <button type="submit" className="rounded-sm bg-primary px-4 py-2 font-medium text-primary-foreground">
         {t('home.searchCta')}
       </button>
     </form>

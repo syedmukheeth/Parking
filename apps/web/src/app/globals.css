@@ -1,33 +1,438 @@
 @import 'tailwindcss';
 
-@theme {
-  --color-background: #ffffff;
-  --color-foreground: #0b1220;
-  --color-muted: #64748b;
-  --color-brand: #0f766e;
-  --color-border: #e2e8f0;
-  --color-surface: #f8fafc;
-  --color-danger: #b91c1c;
-  --color-danger-bg: #fef2f2;
-  --color-success: #15803d;
+/*
+ * ParkAP design tokens.
+ *
+ * Two layers, deliberately:
+ *   1. Brand ramps (--pk-*) — what the colour IS. Components never touch these.
+ *   2. Semantic slots (--background, --primary, --available, …) — what the
+ *      colour is FOR. Components reference only these.
+ *
+ * Dark mode remaps the semantic layer onto different ramp steps rather than
+ * redefining the ramps. Same effect as redeclaring brand tokens — a lifted
+ * blue on a dark canvas — but the ramp stays one fixed, inspectable scale.
+ *
+ * Theme resolution: system preference by default, with an explicit
+ * [data-theme] override so a toggle can win in both directions later.
+ */
+
+/* ───────────────────────────── Brand ramps ───────────────────────────── */
+
+:root {
+  /* Primary — deep intelligent blue. The product's identity and main action. */
+  --pk-blue-50: oklch(0.97 0.015 255);
+  --pk-blue-100: oklch(0.93 0.035 255);
+  --pk-blue-200: oklch(0.87 0.065 256);
+  --pk-blue-300: oklch(0.78 0.1 257);
+  --pk-blue-400: oklch(0.66 0.15 258);
+  --pk-blue-500: oklch(0.55 0.19 259);
+  --pk-blue-600: oklch(0.47 0.19 260);
+  --pk-blue-700: oklch(0.4 0.165 261);
+  --pk-blue-800: oklch(0.33 0.13 262);
+  --pk-blue-900: oklch(0.27 0.1 263);
+  --pk-blue-950: oklch(0.19 0.07 264);
+
+  /* Accent — cyan. Mobility signals: live data, motion, "now". */
+  --pk-cyan-100: oklch(0.94 0.045 205);
+  --pk-cyan-300: oklch(0.85 0.11 208);
+  --pk-cyan-400: oklch(0.78 0.13 207);
+  --pk-cyan-500: oklch(0.7 0.14 206);
+  --pk-cyan-600: oklch(0.58 0.13 207);
+  --pk-cyan-700: oklch(0.48 0.11 209);
+  --pk-cyan-950: oklch(0.22 0.05 208);
+
+  /* Availability triad. These three carry meaning, never decoration:
+   * green = spaces free, amber = nearly full, red = full. They must stay
+   * mutually distinguishable in both themes and for the ~8% of male users
+   * with red-green deficiency — which is why the UI always pairs them with
+   * a number or a word, never colour alone. */
+  --pk-green-100: oklch(0.94 0.05 155);
+  --pk-green-300: oklch(0.8 0.13 155);
+  --pk-green-400: oklch(0.72 0.15 155);
+  --pk-green-500: oklch(0.65 0.16 155);
+  --pk-green-600: oklch(0.54 0.145 155);
+  --pk-green-700: oklch(0.46 0.125 156);
+  --pk-green-950: oklch(0.22 0.055 156);
+
+  --pk-amber-100: oklch(0.95 0.06 85);
+  --pk-amber-300: oklch(0.86 0.14 82);
+  --pk-amber-400: oklch(0.8 0.155 78);
+  --pk-amber-500: oklch(0.75 0.16 75);
+  --pk-amber-600: oklch(0.63 0.15 68);
+  --pk-amber-700: oklch(0.52 0.13 62);
+  --pk-amber-950: oklch(0.24 0.055 70);
+
+  --pk-red-100: oklch(0.94 0.04 25);
+  --pk-red-300: oklch(0.8 0.11 24);
+  --pk-red-400: oklch(0.71 0.16 25);
+  --pk-red-500: oklch(0.62 0.2 25);
+  --pk-red-600: oklch(0.53 0.2 26);
+  --pk-red-700: oklch(0.45 0.17 27);
+  --pk-red-950: oklch(0.22 0.07 25);
+
+  /* Neutrals — cool grey, very slightly blue so they sit under the brand. */
+  --pk-white: oklch(1 0 0);
+  --pk-slate-50: oklch(0.985 0.003 250);
+  --pk-slate-100: oklch(0.96 0.005 250);
+  --pk-slate-200: oklch(0.92 0.008 250);
+  --pk-slate-300: oklch(0.86 0.01 250);
+  --pk-slate-400: oklch(0.7 0.014 250);
+  --pk-slate-500: oklch(0.55 0.016 252);
+  --pk-slate-600: oklch(0.46 0.018 254);
+  --pk-slate-700: oklch(0.37 0.02 256);
+  --pk-slate-800: oklch(0.27 0.02 258);
+  --pk-slate-900: oklch(0.2 0.018 260);
+  --pk-slate-950: oklch(0.15 0.016 262);
 }
 
-@media (prefers-color-scheme: dark) {
-  @theme {
-    --color-background: #0b1220;
-    --color-foreground: #e2e8f0;
-    --color-muted: #94a3b8;
-    --color-border: #1e293b;
-    --color-surface: #111827;
-    --color-danger: #f87171;
-    --color-danger-bg: #3f1212;
-    --color-success: #4ade80;
-  }
+/* ──────────────────────── Semantic slots — light ──────────────────────── */
+
+:root {
+  --background: var(--pk-slate-50);
+  --foreground: var(--pk-slate-900);
+
+  --card: var(--pk-white);
+  --card-foreground: var(--pk-slate-900);
+
+  --popover: var(--pk-white);
+  --popover-foreground: var(--pk-slate-900);
+
+  --primary: var(--pk-blue-600);
+  --primary-foreground: var(--pk-white);
+  --primary-subtle: var(--pk-blue-50);
+  --primary-subtle-foreground: var(--pk-blue-700);
+
+  --secondary: var(--pk-slate-100);
+  --secondary-foreground: var(--pk-slate-800);
+
+  --muted: var(--pk-slate-100);
+  --muted-foreground: var(--pk-slate-600);
+
+  --accent: var(--pk-cyan-700);
+  --accent-foreground: var(--pk-white);
+  --accent-subtle: var(--pk-cyan-100);
+  --accent-subtle-foreground: var(--pk-cyan-700);
+
+  /* Availability — the semantic triad. */
+  --available: var(--pk-green-700);
+  --available-foreground: var(--pk-white);
+  --available-subtle: var(--pk-green-100);
+  --available-subtle-foreground: var(--pk-green-700);
+
+  --limited: var(--pk-amber-700);
+  --limited-foreground: var(--pk-white);
+  --limited-subtle: var(--pk-amber-100);
+  --limited-subtle-foreground: var(--pk-amber-700);
+
+  --full: var(--pk-red-700);
+  --full-foreground: var(--pk-white);
+  --full-subtle: var(--pk-red-100);
+  --full-subtle-foreground: var(--pk-red-700);
+
+  --destructive: var(--pk-red-600);
+  --destructive-foreground: var(--pk-white);
+  --destructive-subtle: var(--pk-red-100);
+  --destructive-subtle-foreground: var(--pk-red-700);
+
+  --success: var(--available);
+  --success-foreground: var(--available-foreground);
+
+  --border: var(--pk-slate-200);
+  /* `--border` is a decorative hairline; `--input` is the visual boundary of
+   * an interactive control, which WCAG 1.4.11 holds to 3:1 against its
+   * neighbour. slate-300 measured 1.5:1 and failed — slate-500 is 4.66:1. */
+  --input: var(--pk-slate-500);
+  --ring: var(--pk-blue-500);
+
+  /* Map surfaces. The basemap is light in both themes for legibility of
+   * roads and labels, so overlay chrome needs its own slots rather than
+   * inheriting the page canvas. */
+  --map-overlay: color-mix(in oklab, var(--pk-white) 92%, transparent);
+  --map-overlay-foreground: var(--pk-slate-900);
+  --map-user: var(--pk-blue-500);
 }
+
+/*
+ * Light only, deliberately.
+ *
+ * The product ships one theme. The map basemap is light in every state, and a
+ * dark UI wrapped around a light map reads as a bug rather than a theme. The
+ * dark ramp values still exist above, so reinstating a dark theme is a matter
+ * of adding the media query back and remapping the slots, not repicking a
+ * palette.
+ *
+ * `color-scheme: light` stops the browser from auto-darkening form controls
+ * and scrollbars for people whose OS is set to dark, which is what otherwise
+ * produces dark inputs on a light page.
+ */
+:root {
+  color-scheme: light;
+}
+
+/* ─────────────────────── Non-colour design tokens ─────────────────────── */
+
+@theme {
+  /* Type scale. `--text-data-*` is for availability counts and prices:
+   * tabular figures so a number changing from 9 to 10 doesn't shift layout. */
+  --text-display: 3.5rem;
+  --text-display--line-height: 1.03;
+  --text-display--letter-spacing: -0.035em;
+  --text-display--font-weight: 640;
+
+  --text-h1: 2.25rem;
+  --text-h1--line-height: 1.12;
+  --text-h1--letter-spacing: -0.028em;
+  --text-h1--font-weight: 620;
+
+  --text-h2: 1.5rem;
+  --text-h2--line-height: 1.22;
+  --text-h2--letter-spacing: -0.02em;
+  --text-h2--font-weight: 600;
+
+  --text-h3: 1.125rem;
+  --text-h3--line-height: 1.35;
+  --text-h3--letter-spacing: -0.012em;
+  --text-h3--font-weight: 600;
+
+  --text-body: 1rem;
+  --text-body--line-height: 1.6;
+
+  --text-small: 0.875rem;
+  --text-small--line-height: 1.5;
+
+  --text-caption: 0.75rem;
+  --text-caption--line-height: 1.4;
+  --text-caption--letter-spacing: 0.01em;
+
+  --text-data-lg: 2.5rem;
+  --text-data-lg--line-height: 1;
+  --text-data-lg--letter-spacing: -0.03em;
+  --text-data-lg--font-weight: 660;
+
+  --text-data: 1.375rem;
+  --text-data--line-height: 1.1;
+  --text-data--letter-spacing: -0.02em;
+  --text-data--font-weight: 640;
+
+  /* Radius */
+  --radius-xs: 0.375rem;
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-sheet: 1.25rem;
+
+  /* Elevation. Restrained on purpose — depth comes from a tight, low-alpha
+   * ambient shadow plus a hairline, not from a soft grey blur. */
+  --shadow-xs: 0 1px 2px oklch(0.2 0.02 260 / 0.06);
+  --shadow-sm: 0 1px 3px oklch(0.2 0.02 260 / 0.08), 0 1px 2px oklch(0.2 0.02 260 / 0.04);
+  --shadow-md: 0 4px 12px oklch(0.2 0.02 260 / 0.08), 0 1px 3px oklch(0.2 0.02 260 / 0.05);
+  --shadow-lg: 0 12px 32px oklch(0.2 0.02 260 / 0.12), 0 2px 8px oklch(0.2 0.02 260 / 0.06);
+  --shadow-sheet: 0 -8px 32px oklch(0.2 0.02 260 / 0.14);
+  --shadow-marker: 0 2px 8px oklch(0.2 0.02 260 / 0.28);
+
+}
+
+/*
+ * `static` because these are read programmatically — Motion pulls durations
+ * and easings off the computed style, and the map overlay reads z-index. A
+ * plain @theme block is tree-shaken to only the values Tailwind can see used
+ * in a class, which silently leaves those lookups returning an empty string.
+ */
+@theme static {
+  /* Motion. Every animation reads its duration and easing from here, so the
+   * whole product can be re-timed in one place. */
+  --ease-out-quart: cubic-bezier(0.25, 1, 0.5, 1);
+  --ease-in-out-quart: cubic-bezier(0.76, 0, 0.24, 1);
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1);
+
+  --duration-instant: 90ms;
+  --duration-fast: 160ms;
+  --duration-base: 240ms;
+  --duration-slow: 400ms;
+  --duration-sheet: 320ms;
+
+  /* Stacking order, declared once so nothing invents a z-index. */
+  --z-map: 0;
+  --z-map-overlay: 10;
+  --z-sheet: 30;
+  --z-header: 40;
+  --z-bottom-nav: 40;
+  --z-popover: 50;
+  --z-modal: 60;
+  --z-toast: 70;
+}
+
+/* Expose the semantic layer as Tailwind utilities. `inline` so the utilities
+ * emit `var(--…)` rather than snapshotting the light value — that is what
+ * lets one CSS variable swap flip the whole theme. */
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-subtle: var(--primary-subtle);
+  --color-primary-subtle-foreground: var(--primary-subtle-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-accent-subtle-foreground: var(--accent-subtle-foreground);
+
+  --color-available: var(--available);
+  --color-available-foreground: var(--available-foreground);
+  --color-available-subtle: var(--available-subtle);
+  --color-available-subtle-foreground: var(--available-subtle-foreground);
+  --color-limited: var(--limited);
+  --color-limited-foreground: var(--limited-foreground);
+  --color-limited-subtle: var(--limited-subtle);
+  --color-limited-subtle-foreground: var(--limited-subtle-foreground);
+  --color-full: var(--full);
+  --color-full-foreground: var(--full-foreground);
+  --color-full-subtle: var(--full-subtle);
+  --color-full-subtle-foreground: var(--full-subtle-foreground);
+
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-subtle: var(--destructive-subtle);
+  --color-destructive-subtle-foreground: var(--destructive-subtle-foreground);
+  --color-success: var(--success);
+  --color-success-foreground: var(--success-foreground);
+
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+
+  --color-map-overlay: var(--map-overlay);
+  --color-map-overlay-foreground: var(--map-overlay-foreground);
+  --color-map-user: var(--map-user);
+
+  --font-sans: var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+}
+
+/* ──────────────────────────────── Base ──────────────────────────────── */
 
 body {
-  background: var(--color-background);
-  color: var(--color-foreground);
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/*
+ * Map markers.
+ *
+ * Styled here rather than with utilities because MapLibre owns these elements
+ * — they live in the map's own overlay container, outside the React tree.
+ * Colours come in as custom properties set per marker, so they still follow
+ * the semantic availability tokens and the active theme.
+ */
+.pk-marker {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.25rem;
+  height: 2.25rem;
+  padding-inline: 0.5rem;
+  border-radius: 999px;
+  border: 2px solid var(--card);
+  background: var(--marker-bg);
+  color: var(--marker-fg);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 640;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+  cursor: pointer;
+  box-shadow: var(--shadow-marker);
+  transition:
+    transform var(--duration-fast) var(--ease-spring),
+    box-shadow var(--duration-fast) var(--ease-out-quart);
+}
+
+.pk-marker:hover {
+  transform: scale(1.08);
+}
+
+/* The selected lot outranks its neighbours visually — a ring in the brand
+ * colour plus a step up in size, so it stays findable in a dense cluster. */
+.pk-marker[data-selected='true'] {
+  transform: scale(1.18);
+  border-color: var(--primary);
+  box-shadow:
+    0 0 0 3px color-mix(in oklab, var(--primary) 35%, transparent),
+    var(--shadow-marker);
+  z-index: 1;
+}
+
+/* Citizen's own position. Distinct from every parking marker on purpose —
+ * round, brand-coloured, no number. */
+.pk-user-dot {
+  width: 1rem;
+  height: 1rem;
+  border-radius: 999px;
+  background: var(--map-user);
+  border: 3px solid var(--card);
+  box-shadow: var(--shadow-marker);
+}
+
+.pk-cluster {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 2.5rem;
+  height: 2.5rem;
+  padding-inline: 0.5rem;
+  border-radius: 999px;
+  border: 2px solid var(--card);
+  background: var(--primary);
+  color: var(--primary-foreground);
+  font: inherit;
+  font-size: 0.8125rem;
+  font-weight: 640;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  box-shadow: var(--shadow-marker);
+}
+
+/* MapLibre ships its own control styling; align it with the product rather
+ * than leaving default browser chrome on top of a designed surface. */
+.maplibregl-ctrl-group {
+  border-radius: var(--radius-sm) !important;
+  box-shadow: var(--shadow-md) !important;
+  background: var(--card) !important;
+}
+
+.maplibregl-ctrl-attrib {
+  background: var(--map-overlay) !important;
+  color: var(--map-overlay-foreground) !important;
+  font-size: 0.6875rem;
+}
+
+.maplibregl-ctrl-attrib a {
+  color: inherit;
+}
+
+/* Availability counts and prices must not reflow as digits change. */
+.tabular {
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* One focus treatment for the whole product. Visible on keyboard, absent on
+ * mouse — and never removed, which is the usual accessibility casualty of a
+ * redesign. */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: var(--radius-xs);
 }
 
 /* Every animation in this app must respect this. */

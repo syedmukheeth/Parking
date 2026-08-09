@@ -15,7 +15,7 @@ export function Countdown({ targetIso, label }: { targetIso: string; label: stri
   }, [targetIso]);
 
   if (ms <= 0) {
-    return <p className="text-sm font-medium text-[var(--color-danger)]">Time's up</p>;
+    return <p className="text-small font-medium text-destructive">Time's up</p>;
   }
 
   const totalSeconds = Math.floor(ms / 1000);
@@ -25,8 +25,8 @@ export function Countdown({ targetIso, label }: { targetIso: string; label: stri
   const display = hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m ${seconds}s`;
 
   return (
-    <p className="text-sm">
-      <span className="text-[var(--color-muted)]">{label}</span> <span className="font-medium">{display}</span>
+    <p className="text-small">
+      <span className="text-muted-foreground">{label}</span> <span className="font-medium">{display}</span>
     </p>
   );
 }

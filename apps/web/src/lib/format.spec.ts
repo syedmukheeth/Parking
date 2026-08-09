@@ -2,8 +2,14 @@ import { describe, expect, it } from 'vitest';
 import { formatDuration, formatINR } from './format';
 
 describe('formatINR', () => {
-  it('converts paise to rupees with two decimal places', () => {
-    expect(formatINR(4000)).toBe('₹40.00');
+  // Tariffs are round numbers; "₹40.00/hr" on a parking card reads like a bank
+  // statement. Decimals appear only when there are actually paise to show.
+  it('drops decimals for whole rupees', () => {
+    expect(formatINR(4000)).toBe('₹40');
+  });
+
+  it('keeps two decimals when the amount has paise', () => {
+    expect(formatINR(4720)).toBe('₹47.20');
   });
 
   it('never shows fractional paise', () => {
@@ -11,7 +17,7 @@ describe('formatINR', () => {
   });
 
   it('handles zero', () => {
-    expect(formatINR(0)).toBe('₹0.00');
+    expect(formatINR(0)).toBe('₹0');
   });
 });
 

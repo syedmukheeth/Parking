@@ -36,7 +36,7 @@ export function GeolocateButton() {
       type="button"
       onClick={handleClick}
       disabled={status === 'locating'}
-      className="rounded-md border border-[var(--color-border)] px-3 py-2 text-sm disabled:opacity-60"
+      className="rounded-sm border border-border px-3 py-2 text-small disabled:opacity-60"
     >
       {status === 'locating' ? 'Locating…' : status === 'error' ? "Couldn't get location" : 'Use my location'}
     </button>

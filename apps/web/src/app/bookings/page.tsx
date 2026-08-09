@@ -24,17 +24,17 @@ export default async function BookingsPage({ searchParams }: BookingsPageProps) 
 
   return (
     <main className="mx-auto flex max-w-2xl flex-col gap-6 px-4 py-8 sm:px-6">
-      <h1 className="text-2xl font-semibold tracking-tight">{t('history.title')}</h1>
-      <nav className="flex gap-4 border-b border-[var(--color-border)] text-sm">
+      <h1 className="text-h1">{t('history.title')}</h1>
+      <nav className="flex gap-4 border-b border-border text-small">
         <Link
           href="/bookings?upcoming=true"
-          className={`-mb-px border-b-2 px-1 py-2 ${upcoming ? 'border-[var(--color-brand)] font-medium' : 'border-transparent text-[var(--color-muted)]'}`}
+          className={`-mb-px border-b-2 px-1 py-2 ${upcoming ? 'border-primary font-medium' : 'border-transparent text-muted-foreground'}`}
         >
           {t('history.upcoming')}
         </Link>
         <Link
           href="/bookings?upcoming=false"
-          className={`-mb-px border-b-2 px-1 py-2 ${!upcoming ? 'border-[var(--color-brand)] font-medium' : 'border-transparent text-[var(--color-muted)]'}`}
+          className={`-mb-px border-b-2 px-1 py-2 ${!upcoming ? 'border-primary font-medium' : 'border-transparent text-muted-foreground'}`}
         >
           {t('history.past')}
         </Link>

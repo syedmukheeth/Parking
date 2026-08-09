@@ -1,17 +1,19 @@
 import type { Metadata } from 'next';
+import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { ApiError } from '@/lib/api';
-import { formatINR, formatLocalTime } from '@/lib/format';
+import { formatINR } from '@/lib/format';
 import { requireSession } from '@/lib/session';
-import { t, type MessageKey } from '@/i18n/messages';
+import { t } from '@/i18n/messages';
 import { getBookingDetail } from '@/features/bookings/api';
 import { CancelButton } from '@/features/bookings/components/cancel-button';
 import { Countdown } from '@/features/bookings/components/countdown';
 import { ExtendForm } from '@/features/bookings/components/extend-form';
 import { PayNowButton } from '@/features/bookings/components/pay-now-button';
-import { TicketQr } from '@/features/tickets/components/ticket-qr';
+import { ParkingPass } from '@/features/tickets/components/parking-pass';
+import { PendingPassRefresher } from '@/features/tickets/components/pending-pass-refresher';
 
-export const metadata: Metadata = { title: 'Your booking' };
+export const metadata: Metadata = { title: t('ticket.title') };
 
 interface BookingPageProps {
   params: Promise<{ id: string }>;
@@ -29,57 +31,67 @@ export default async function BookingDetailPage({ params }: BookingPageProps) {
     throw error;
   }
 
-  const statusLabel = t(`ticket.status.${booking.status}` as MessageKey);
+  const isLive = booking.status === 'CONFIRMED' || booking.status === 'ACTIVE';
+  const awaitingPayment =
+    booking.status === 'PENDING' && booking.payment && booking.payment.status === 'CREATED';
+  // Paid, but the worker has not confirmed it yet. A transient state, seconds
+  // long, that the citizen lands in immediately after tapping pay.
+  const issuing = booking.status === 'PENDING' && booking.payment?.status === 'SUCCESS';
 
   return (
-    <main className="mx-auto flex max-w-lg flex-col gap-6 px-4 py-8 sm:px-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-xl font-semibold tracking-tight">{t('ticket.title')}</h1>
-        <span className="rounded-full bg-[var(--color-surface)] px-3 py-1 text-sm font-medium">{statusLabel}</span>
+    <main className="mx-auto flex max-w-lg flex-col gap-5 px-4 py-6 sm:px-6 lg:py-10">
+      <h1 className="text-h1">{t('ticket.title')}</h1>
+
+      {issuing ? (
+        <>
+          <PendingPassRefresher />
+          <p role="status" className="rounded-lg border border-border bg-secondary px-5 py-3 text-small">
+            {t('ticket.issuing')}
+          </p>
+        </>
+      ) : null}
+
+      <ParkingPass booking={booking} />
+
+      <div className="flex items-baseline justify-between rounded-lg border border-border bg-card px-5 py-3">
+        <span className="text-small text-muted-foreground">{t('booking.total')}</span>
+        <span className="tabular text-data">{formatINR(booking.finalAmount ?? booking.quotedAmount)}</span>
       </div>
 
-      <div className="flex flex-col gap-1 rounded-lg border border-[var(--color-border)] p-4 text-sm">
-        <p>
-          <span className="text-[var(--color-muted)]">Vehicle:</span> {booking.vehicleNumber} ({booking.vehicleType})
-        </p>
-        <p>
-          <span className="text-[var(--color-muted)]">From:</span> {formatLocalTime(booking.startAt)}
-        </p>
-        <p>
-          <span className="text-[var(--color-muted)]">Until:</span> {formatLocalTime(booking.endAt)}
-        </p>
-        <p>
-          <span className="text-[var(--color-muted)]">{t('booking.total')}:</span>{' '}
-          {formatINR(booking.finalAmount ?? booking.quotedAmount)}
-        </p>
-      </div>
-
-      {booking.status === 'PENDING' && booking.payment && booking.payment.status === 'CREATED' ? (
-        <div className="flex flex-col gap-3 rounded-lg border border-[var(--color-border)] p-4">
+      {awaitingPayment && booking.payment ? (
+        <div className="flex flex-col gap-3 rounded-lg border border-border bg-card p-5">
           {booking.holdExpiresAt ? (
-            <Countdown targetIso={String(booking.holdExpiresAt)} label="Hold expires in" />
+            <Countdown targetIso={String(booking.holdExpiresAt)} label={t('ticket.holdExpires')} />
           ) : null}
           <PayNowButton paymentId={booking.payment.id} />
         </div>
       ) : null}
 
-      {(booking.status === 'CONFIRMED' || booking.status === 'ACTIVE') && (
-        <div className="flex flex-col gap-4 rounded-lg border border-[var(--color-border)] p-4">
-          <TicketQr bookingId={booking.id} />
-          <Countdown targetIso={String(booking.endAt)} label="Time remaining" />
+      {isLive ? (
+        <div className="flex flex-col gap-4 rounded-lg border border-border bg-card p-5">
+          <Countdown targetIso={String(booking.endAt)} label={t('ticket.timeRemaining')} />
           <ExtendForm bookingId={booking.id} currentEndAt={String(booking.endAt)} />
           {booking.status === 'CONFIRMED' ? <CancelButton bookingId={booking.id} /> : null}
         </div>
-      )}
+      ) : null}
 
-      {booking.status === 'COMPLETED' ? (
-        <p className="text-sm text-[var(--color-muted)]">This booking is complete. Thanks for parking with ParkAP.</p>
-      ) : null}
-      {booking.status === 'CANCELLED' ? (
-        <p className="text-sm text-[var(--color-muted)]">This booking was cancelled{booking.cancelReason ? `: ${booking.cancelReason}` : '.'}</p>
-      ) : null}
-      {booking.status === 'EXPIRED' ? (
-        <p className="text-sm text-[var(--color-muted)]">This reservation expired before payment completed.</p>
+      {/* Terminal states get a plain sentence and a way onward, not a dead end. */}
+      {booking.status === 'COMPLETED' || booking.status === 'CANCELLED' || booking.status === 'EXPIRED' ? (
+        <div className="flex flex-col items-start gap-3 rounded-lg border border-border p-5">
+          <p className="text-small text-muted-foreground">
+            {booking.status === 'COMPLETED' ? t('ticket.completedNote') : null}
+            {booking.status === 'CANCELLED'
+              ? `${t('ticket.cancelledNote')}${booking.cancelReason ? `: ${booking.cancelReason}` : ''}`
+              : null}
+            {booking.status === 'EXPIRED' ? t('ticket.expiredNote') : null}
+          </p>
+          <Link
+            href={`/locations/${booking.locationId}?vehicleNumber=${encodeURIComponent(booking.vehicleNumber)}`}
+            className="rounded-sm bg-primary px-4 py-2 text-small font-medium text-primary-foreground"
+          >
+            {t('history.repeatBooking')}
+          </Link>
+        </div>
       ) : null}
     </main>
   );

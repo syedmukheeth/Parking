@@ -31,7 +31,11 @@ export function TicketQr({ bookingId }: { bookingId: string }) {
       if (cancelled) return;
 
       if (result.ok) {
-        setState({ status: 'ready', qrDataUrl: result.data.qrDataUrl, expiresAt: String(result.data.expiresAt) });
+        setState({
+          status: 'ready',
+          qrDataUrl: result.data.qrDataUrl,
+          expiresAt: String(result.data.expiresAt),
+        });
         return;
       }
 
@@ -51,27 +55,31 @@ export function TicketQr({ bookingId }: { bookingId: string }) {
 
   if (state.status === 'loading') {
     return (
-      <div role="status" className="flex flex-col items-center gap-2 py-6">
-        <div className="h-48 w-48 animate-pulse rounded-md bg-[var(--color-surface)] motion-reduce:animate-none" />
-        <p className="text-sm text-[var(--color-muted)]">Preparing your ticket…</p>
+      <div role="status" className="flex flex-col items-center gap-3 px-5 py-6">
+        <div className="size-52 animate-pulse rounded-sm bg-secondary motion-reduce:animate-none" />
+        <p className="text-small text-muted-foreground">{t('ticket.preparing')}</p>
       </div>
     );
   }
 
   if (state.status === 'error') {
     return (
-      <div role="alert" className="flex flex-col items-center gap-2 py-6 text-center">
-        <p className="text-sm text-[var(--color-danger)]">{state.message}</p>
-        <p className="text-xs text-[var(--color-muted)]">Refresh this page in a moment to try again.</p>
+      <div role="alert" className="flex flex-col items-center gap-1 px-5 py-6 text-center">
+        <p className="text-small text-destructive">{state.message}</p>
+        <p className="text-caption text-muted-foreground">{t('ticket.retryHint')}</p>
       </div>
     );
   }
 
   return (
-    <div className="flex flex-col items-center gap-2 py-4">
-      <p className="text-sm font-medium">{t('ticket.showAtGate')}</p>
-      <Image src={state.qrDataUrl} alt="Booking QR code" width={220} height={220} unoptimized />
-      <p className="text-xs text-[var(--color-muted)]">
+    <div className="flex flex-col items-center gap-3 px-5 py-6">
+      {/* White plate behind the QR regardless of theme — scanners need the
+       * quiet zone and the contrast, and a dark-mode QR often will not read. */}
+      <div className="rounded-sm bg-white p-3">
+        <Image src={state.qrDataUrl} alt={t('ticket.qrAlt')} width={208} height={208} unoptimized />
+      </div>
+      <p className="text-small font-medium">{t('ticket.showAtGate')}</p>
+      <p className="tabular text-caption text-muted-foreground">
         {t('ticket.expiresAt')} {formatLocalTime(state.expiresAt)}
       </p>
     </div>

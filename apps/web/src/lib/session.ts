@@ -38,10 +38,49 @@ export async function getSessionToken(): Promise<string | null> {
   return store.get(SESSION_COOKIE_NAME)?.value ?? null;
 }
 
+/**
+ * ─────────────────────── DEMO MODE ───────────────────────
+ *
+ * When DEMO_AUTO_SIGN_IN is on, the app skips the sign-in screen entirely and
+ * runs as one fixed demo citizen, so the whole product can be clicked through
+ * without an account. It signs that citizen in through the *real* OTP endpoints
+ * (the same stub flow a human would use), so the api still issues a genuine
+ * session and every authorisation check downstream behaves normally.
+ *
+ * SECURITY: this is a total authentication bypass. It refuses to run when
+ * NODE_ENV is production, in the same spirit as the stub-provider boot guard in
+ * apps/api. Do not weaken that check, and do not enable the flag on a
+ * deployed environment.
+ */
+/**
+ * Matches the demo row created by apps/api/prisma/seed.ts. The token is signed
+ * locally rather than obtained through the OTP endpoints: those are rate
+ * limited per phone number, so a handful of server restarts would lock the
+ * demo out of its own app.
+ */
+const DEMO_SESSION: SessionPayload = {
+  sub: 'usr_demo_citizen',
+  phone: '+919000000001',
+  role: 'CITIZEN',
+};
+
+function demoModeEnabled(): boolean {
+  return process.env.DEMO_AUTO_SIGN_IN === 'true' && process.env.NODE_ENV !== 'production';
+}
+
+/** Signed once per server process rather than on every render. */
+let demoToken: string | null = null;
+
+function getDemoToken(): string | null {
+  if (!demoModeEnabled()) return null;
+  demoToken ??= signSessionToken(DEMO_SESSION);
+  return demoToken;
+}
+
 /** Reads and verifies the current session server-side. Returns null rather
  * than throwing — an absent or expired session is a normal, common state. */
 export async function getSession(): Promise<SessionPayload | null> {
-  const token = await getSessionToken();
+  const token = (await getSessionToken()) ?? getDemoToken();
   if (!token) return null;
 
   try {
@@ -53,8 +92,18 @@ export async function getSession(): Promise<SessionPayload | null> {
   }
 }
 
-/** For pages that require a signed-in citizen — search, location detail, and
- * the home page stay public and never call this (parkap-frontend skill). */
+/** The token outgoing api calls should carry: the citizen's own cookie, or the
+ * demo session when demo mode is on. */
+export async function getEffectiveToken(): Promise<string | null> {
+  return (await getSessionToken()) ?? getDemoToken();
+}
+
+export function isDemoMode(): boolean {
+  return demoModeEnabled();
+}
+
+/** For pages that require a signed-in citizen. Search, location detail, and the
+ * home page stay public and never call this (parkap-frontend skill). */
 export async function requireSession(): Promise<SessionPayload> {
   const session = await getSession();
   if (!session) redirect('/sign-in');

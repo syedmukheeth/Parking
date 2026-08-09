@@ -1,6 +1,6 @@
 import 'server-only';
 import type { ErrorResponse } from '@parkap/shared';
-import { getSessionToken } from './session';
+import { getEffectiveToken } from './session';
 
 /**
  * The only place apps/web calls the api. Every feature's `api.ts` goes
@@ -22,7 +22,7 @@ export class ApiError extends Error {
 }
 
 interface ApiFetchOptions {
-  method?: 'GET' | 'POST' | 'PATCH' | 'DELETE';
+  method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
   body?: unknown;
   query?: Record<string, string | number | boolean | undefined>;
   /** Forward the session cookie as a bearer token. Default true — pass false
@@ -42,7 +42,7 @@ export async function apiFetch<T>(path: string, options: ApiFetchOptions = {}): 
 
   const headers: Record<string, string> = { 'Content-Type': 'application/json' };
   if (auth) {
-    const token = await getSessionToken();
+    const token = await getEffectiveToken();
     if (token) headers.Authorization = `Bearer ${token}`;
   }
 

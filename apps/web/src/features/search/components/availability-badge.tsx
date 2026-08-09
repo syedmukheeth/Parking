@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { t } from '@/i18n/messages';
+import { AVAILABILITY_CLASSES, availabilityStatus } from '@/lib/availability';
 import { requestLocationSnapshot, subscribeToLocationAvailability } from '@/lib/socket';
 
 /**
@@ -41,20 +43,13 @@ export function AvailabilityBadge({
     return sub.unsubscribe;
   }, [locationId]);
 
-  const isLow = total > 0 && available / total <= 0.15;
-  const isFull = available <= 0;
+  const status = availabilityStatus(available, total);
 
   return (
     <span
-      className={`inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-xs font-medium ${
-        isFull
-          ? 'bg-[var(--color-danger-bg)] text-[var(--color-danger)]'
-          : isLow
-            ? 'bg-amber-100 text-amber-800 dark:bg-amber-950 dark:text-amber-300'
-            : 'bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300'
-      }`}
+      className={`tabular inline-flex items-center gap-1 rounded-full px-2 py-0.5 text-caption font-medium ${AVAILABILITY_CLASSES[status].subtle}`}
     >
-      {isFull ? 'Full' : `${available} of ${total} free`}
+      {status === 'full' ? t('availability.full') : `${available} ${t('availability.free')}`}
     </span>
   );
 }

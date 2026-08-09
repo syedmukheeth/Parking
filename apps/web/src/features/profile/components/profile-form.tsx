@@ -13,18 +13,18 @@ export function ProfileForm({ user }: { user: User }) {
   return (
     <form action={formAction} className="flex flex-col gap-4">
       <div>
-        <label htmlFor="name" className="block text-sm font-medium">
+        <label htmlFor="name" className="block text-small font-medium">
           {t('profile.name')}
         </label>
         <input
           id="name"
           name="name"
           defaultValue={user.name ?? ''}
-          className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-transparent px-3 py-2"
+          className="mt-1 w-full rounded-sm border border-input bg-background px-3 py-2"
         />
       </div>
       <div>
-        <label htmlFor="email" className="block text-sm font-medium">
+        <label htmlFor="email" className="block text-small font-medium">
           {t('profile.email')}
         </label>
         <input
@@ -32,18 +32,18 @@ export function ProfileForm({ user }: { user: User }) {
           name="email"
           type="email"
           defaultValue={user.email ?? ''}
-          className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-transparent px-3 py-2"
+          className="mt-1 w-full rounded-sm border border-input bg-background px-3 py-2"
         />
       </div>
       <div>
-        <label htmlFor="locale" className="block text-sm font-medium">
+        <label htmlFor="locale" className="block text-small font-medium">
           Language
         </label>
         <select
           id="locale"
           name="locale"
           defaultValue={user.locale}
-          className="mt-1 w-full rounded-md border border-[var(--color-border)] bg-transparent px-3 py-2"
+          className="mt-1 w-full rounded-sm border border-input bg-background px-3 py-2"
         >
           <option value="en">English</option>
           <option value="te">తెలుగు (Telugu)</option>
@@ -51,12 +51,12 @@ export function ProfileForm({ user }: { user: User }) {
       </div>
 
       {state.status === 'error' ? (
-        <p role="alert" className="text-sm text-[var(--color-danger)]">
+        <p role="alert" className="text-small text-destructive">
           {state.error}
         </p>
       ) : null}
       {state.status === 'success' ? (
-        <p role="status" className="text-sm text-[var(--color-success)]">
+        <p role="status" className="text-small text-success">
           {t('profile.saved')}
         </p>
       ) : null}
@@ -64,7 +64,7 @@ export function ProfileForm({ user }: { user: User }) {
       <button
         type="submit"
         disabled={isPending}
-        className="self-start rounded-md bg-[var(--color-brand)] px-4 py-2 font-medium text-white disabled:opacity-60"
+        className="self-start rounded-sm bg-primary px-4 py-2 font-medium text-primary-foreground disabled:opacity-60"
       >
         {isPending ? t('common.loading') : t('profile.save')}
       </button>
