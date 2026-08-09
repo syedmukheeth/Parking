@@ -20,7 +20,9 @@ async function bootstrap(): Promise<void> {
   app.useGlobalFilters(new DomainExceptionFilter());
   app.useGlobalInterceptors(new CorrelationIdInterceptor());
 
-  await app.listen(env.API_PORT);
+  // Bind every interface explicitly. Inside a container, a service bound to
+  // loopback is invisible to the platform's health check and its router.
+  await app.listen(env.API_PORT, '0.0.0.0');
   new Logger('bootstrap').log(`api listening on :${env.API_PORT} (${env.NODE_ENV})`);
 }
 

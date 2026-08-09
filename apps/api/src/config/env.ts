@@ -64,7 +64,15 @@ let cached: Env | undefined;
 export function loadEnv(source: NodeJS.ProcessEnv = process.env): Env {
   if (cached) return cached;
 
-  const parsed = envSchema.safeParse(source);
+  // Container platforms (Railway, Render, Fly, Cloud Run) assign a port and
+  // hand it over as `PORT`, and route external traffic only to that port.
+  // Listening on our own 4000 there produces a service that boots cleanly and
+  // is never reachable — the worst kind of deploy failure. An explicit
+  // API_PORT still wins, so local .env behaviour is unchanged.
+  const parsed = envSchema.safeParse({
+    ...source,
+    API_PORT: source.API_PORT ?? source.PORT,
+  });
   if (!parsed.success) {
     const issues = parsed.error.issues
       .map((issue) => `  ${issue.path.join('.') || '(root)'}: ${issue.message}`)
