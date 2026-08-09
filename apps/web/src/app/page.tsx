@@ -10,10 +10,10 @@ import { getMe } from '@/features/profile/api';
 import { searchLocations } from '@/features/search/api';
 
 export const metadata: Metadata = {
-  title: { absolute: `${t('app.name')} — ${t('app.tagline')}` },
+  title: { absolute: `${t('app.name')} · ${t('app.tagline')}` },
   description: t('landing.heroBody'),
   openGraph: {
-    title: `${t('app.name')} — ${t('app.tagline')}`,
+    title: `${t('app.name')} · ${t('app.tagline')}`,
     description: t('landing.heroBody'),
     type: 'website',
   },
@@ -31,7 +31,15 @@ export default async function HomePage() {
   const session = await getSession();
 
   if (!session) {
-    const results = await searchLocations({ q: 'a', limit: 40, page: 1, sort: 'availability' });
+    // Cached for a minute. This is the marketing page: the lots on it are
+    // illustration, nobody books from here, and making a first-time visitor
+    // wait on a cold api round trip before anything paints is the single
+    // slowest thing on the site. A search that decides a booking is never
+    // cached; see searchLocations' caller in /search.
+    const results = await searchLocations(
+      { limit: 40, page: 1, sort: 'availability' },
+      { revalidateSeconds: 60 },
+    );
     return <Landing locations={results.items} cities={COVERED_CITIES} />;
   }
 

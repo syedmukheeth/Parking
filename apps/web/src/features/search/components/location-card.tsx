@@ -10,7 +10,7 @@ import { AvailabilityBadge } from './availability-badge';
 
 /**
  * The card is a positioned container rather than one big `<Link>` so the
- * favourite toggle can sit beside the link instead of nested inside it —
+ * favourite toggle can sit beside the link instead of nested inside it:
  * a `<button>` inside an `<a>` is invalid HTML and swallows the toggle's click.
  * The link keeps a stretched overlay so the whole card still navigates, and the
  * interactive controls sit above it on the z-axis.
@@ -24,7 +24,7 @@ export function LocationCard({
 }: {
   location: LocationSummary;
   isFavourite?: boolean;
-  /** Off for signed-out visitors — search is public, favouriting is not. */
+  /** Off for signed-out visitors: search is public, favouriting is not. */
   showFavourite?: boolean;
   /** Mirrors map selection so the two halves of discovery stay in sync. */
   isSelected?: boolean;
@@ -43,7 +43,19 @@ export function LocationCard({
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0">
           <h3 className="text-h3">
-            <Link href={`/locations/${location.id}`} className="after:absolute after:inset-0">
+            {/* Viewport prefetch is off deliberately. A search renders up to a
+              * hundred of these, and the App Router default prefetches every
+              * card that scrolls into view, each one a full RSC render of the
+              * location page, which re-queries the api. Measured on the
+              * deployed site that was 94 requests for one search, the slowest
+              * taking 2.4s, all competing with the data the citizen is
+              * actually waiting for. `false` still prefetches on hover, which
+              * is the intent that actually predicts a click. */}
+            <Link
+              href={`/locations/${location.id}`}
+              prefetch={false}
+              className="after:absolute after:inset-0"
+            >
               {location.name}
             </Link>
           </h3>
