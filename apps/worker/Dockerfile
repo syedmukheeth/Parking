@@ -19,7 +19,8 @@ RUN npx prisma generate --schema apps/api/prisma/schema.prisma
 RUN npm run build -w @parkap/worker
 
 FROM node:22-alpine AS runtime
-ENV NODE_ENV=production
+# Set by the host, not the image — the worker must match the api's NODE_ENV
+# so both read the same provider configuration. See docs/DEPLOYMENT.md.
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages/shared/dist ./packages/shared/dist

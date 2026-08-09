@@ -77,13 +77,74 @@ jobs:
       - run: npx prisma generate --schema apps/api/prisma/schema.prisma
       - run: npx turbo run build
 
-  # Deploy is intentionally left as a stub — it needs Coolify/Dokploy host
-  # secrets (webhook URL, registry credentials) this environment doesn't
-  # have. Fill in the `run` step once those exist; the gate (main branch,
-  # only after build is green) is already correct.
-  deploy:
+  # Publishes the api and worker images the container host pulls
+  # (docs/DEPLOYMENT.md). GITHUB_TOKEN is enough to push to GHCR, so this
+  # needs no configured secret — unlike the release step below.
+  images:
     if: github.ref == 'refs/heads/main'
     needs: [build]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    strategy:
+      matrix:
+        app: [api, worker]
     steps:
-      - run: echo "Wire this up to Coolify/Dokploy once the host and registry secrets exist."
+      - uses: actions/checkout@v4
+      - uses: docker/setup-buildx-action@v3
+      - uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - uses: docker/build-push-action@v6
+        with:
+          # The repo root — npm workspaces need the whole tree to resolve
+          # @parkap/shared.
+          context: .
+          file: apps/${{ matrix.app }}/Dockerfile
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/parkap-${{ matrix.app }}:${{ github.sha }}
+            ghcr.io/${{ github.repository_owner }}/parkap-${{ matrix.app }}:latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  # Migrations run before the new containers start, never after, and never as
+  # `migrate dev` (docs/DATA-MODEL.md). Skipped rather than failed when the
+  # host secrets are absent, so a fork or an unconfigured repo still gets a
+  # green pipeline instead of a red one it cannot fix.
+  release:
+    if: github.ref == 'refs/heads/main'
+    needs: [images]
+    runs-on: ubuntu-latest
+    # The `secrets` context is not available in a step's `if`, so presence is
+    # resolved once here — job-level `env` can read it — and the steps below
+    # branch on these flags instead.
+    env:
+      NODE_VERSION: '22'
+      HAS_DB: ${{ secrets.DIRECT_URL != '' }}
+      HAS_WEBHOOK: ${{ secrets.DEPLOY_WEBHOOK_URL != '' }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with: { node-version: ${{ env.NODE_VERSION }}, cache: 'npm' }
+      - run: npm ci
+
+      - name: Apply migrations
+        if: env.HAS_DB == 'true'
+        env:
+          DATABASE_URL: ${{ secrets.DATABASE_URL }}
+          DIRECT_URL: ${{ secrets.DIRECT_URL }}
+        run: npx prisma migrate deploy --schema apps/api/prisma/schema.prisma
+
+      - name: Trigger the host to pull the new images
+        if: env.HAS_WEBHOOK == 'true'
+        run: curl -fsS -X POST "${{ secrets.DEPLOY_WEBHOOK_URL }}"
+
+      - name: Report a skipped deploy
+        if: env.HAS_WEBHOOK != 'true'
+        run: |
+          echo "No DEPLOY_WEBHOOK_URL secret set — images are published, nothing was deployed."
+          echo "See docs/DEPLOYMENT.md."

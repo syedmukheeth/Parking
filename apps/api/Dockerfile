@@ -19,7 +19,11 @@ RUN npx prisma generate --schema apps/api/prisma/schema.prisma
 RUN npm run build -w @parkap/api
 
 FROM node:22-alpine AS runtime
-ENV NODE_ENV=production
+# NODE_ENV is deliberately NOT baked in. It selects the stub-provider boot
+# guard in src/config/env.ts, and baking `production` into an image that has
+# only stub providers available produces a container that crashes on every
+# start with a message about OTP configuration. The host sets it — see
+# docs/DEPLOYMENT.md.
 WORKDIR /app
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages/shared/dist ./packages/shared/dist
