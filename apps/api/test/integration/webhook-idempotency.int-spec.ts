@@ -4,7 +4,7 @@ import type { PaymentWebhook } from '@parkap/shared';
 import type { PrismaService } from '../../src/common/prisma/prisma.service';
 import { BookingsService } from '../../src/features/bookings/bookings.service';
 import { createFixtureSlotType, createFixtureUser } from './fixtures';
-import { truncateAll } from './setup';
+import { hasTestDatabase, truncateAll } from './setup';
 import { buildTestingModule } from './test-module';
 
 /**
@@ -12,7 +12,7 @@ import { buildTestingModule } from './test-module';
  * webhooks) must confirm the booking once, not twice, and must not enqueue
  * the ticket-issue job twice (docs/API-CONTRACT.md).
  */
-describe('payment webhook idempotency', () => {
+describe.skipIf(!hasTestDatabase)('payment webhook idempotency', () => {
   let moduleRef: TestingModule;
   let prisma: PrismaService;
   let bookingsService: BookingsService;

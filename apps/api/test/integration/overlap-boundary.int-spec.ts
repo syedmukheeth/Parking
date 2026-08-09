@@ -4,14 +4,14 @@ import { DomainError } from '../../src/common/errors/domain-error';
 import type { PrismaService } from '../../src/common/prisma/prisma.service';
 import { BookingsService } from '../../src/features/bookings/bookings.service';
 import { createFixtureSlotType, createFixtureUser } from './fixtures';
-import { truncateAll } from './setup';
+import { hasTestDatabase, truncateAll } from './setup';
 import { buildTestingModule } from './test-module';
 
 /**
  * Guards the strict-inequality rule directly: `<=` on the overlap bounds
  * would silently halve capacity at every hour boundary (docs/DATA-MODEL.md).
  */
-describe('booking overlap boundary', () => {
+describe.skipIf(!hasTestDatabase)('booking overlap boundary', () => {
   let moduleRef: TestingModule;
   let prisma: PrismaService;
   let bookingsService: BookingsService;

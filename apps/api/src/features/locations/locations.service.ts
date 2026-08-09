@@ -97,6 +97,37 @@ export class LocationsService {
     };
   }
 
+  /**
+   * Results-card summaries for a known set of ids, in the order given. Exists
+   * so the favourites feature renders the exact same card shape as search
+   * instead of re-deriving `priceFrom`/availability itself — that duplication
+   * is how the two views drift apart.
+   */
+  async getSummariesByIds(ids: string[]): Promise<LocationSummary[]> {
+    if (ids.length === 0) return [];
+
+    const locations = await this.repo.findByIds(ids);
+    const now = new Date();
+    const occupied = await this.repo.occupiedCountsNow(
+      locations.flatMap((location) => location.slotTypes.map((slot) => slot.id)),
+      now,
+    );
+
+    const byId = new Map(
+      locations.map((location) => [
+        location.id,
+        this.buildSummary(location, occupied, { lat: undefined, lng: undefined }, false),
+      ]),
+    );
+
+    // Preserve the caller's ordering, and drop ids that no longer resolve —
+    // a location can be deleted while a favourite still points at it.
+    return ids.flatMap((id) => {
+      const summary = byId.get(id);
+      return summary ? [summary] : [];
+    });
+  }
+
   /** Computed from the database, never the cache — the reconciliation path
    * that lets realtime cache drift self-heal (docs/API-CONTRACT.md). */
   async getAvailability(id: string): Promise<LocationAvailability> {

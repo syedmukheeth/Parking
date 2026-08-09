@@ -55,6 +55,16 @@ export class LocationRepository {
     return this.prisma.parkingLocation.findUnique({ where: { id }, include: CANDIDATE_INCLUDE });
   }
 
+  /** One query for a known set of ids — the favourites list would otherwise
+   * fan out to one `findById` per saved location. */
+  async findByIds(ids: string[]): Promise<LocationCandidate[]> {
+    if (ids.length === 0) return [];
+    return this.prisma.parkingLocation.findMany({
+      where: { id: { in: ids } },
+      include: CANDIDATE_INCLUDE,
+    });
+  }
+
   /** Minimal projection for the realtime feature — avoids RealtimeModule
    * depending on BookingsModule's repository, which would create a cycle
    * (bookings already depends on realtime to publish deltas). */

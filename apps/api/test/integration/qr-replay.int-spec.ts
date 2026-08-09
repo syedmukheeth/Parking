@@ -4,12 +4,12 @@ import { DomainError } from '../../src/common/errors/domain-error';
 import type { PrismaService } from '../../src/common/prisma/prisma.service';
 import { TicketsService } from '../../src/features/tickets/tickets.service';
 import { createFixtureSlotType, createFixtureUser } from './fixtures';
-import { truncateAll } from './setup';
+import { hasTestDatabase, truncateAll } from './setup';
 import { buildTestingModule } from './test-module';
 
 const STAFF_USER_ID = 'staff_fixture_user';
 
-describe('ticket QR verify/exit', () => {
+describe.skipIf(!hasTestDatabase)('ticket QR verify/exit', () => {
   let moduleRef: TestingModule;
   let prisma: PrismaService;
   let ticketsService: TicketsService;

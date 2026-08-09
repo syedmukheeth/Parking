@@ -4,7 +4,7 @@ import { DomainError } from '../../src/common/errors/domain-error';
 import type { PrismaService } from '../../src/common/prisma/prisma.service';
 import { BookingsService } from '../../src/features/bookings/bookings.service';
 import { createFixtureSlotType, createFixtureUser } from './fixtures';
-import { truncateAll } from './setup';
+import { hasTestDatabase, truncateAll } from './setup';
 import { buildTestingModule } from './test-module';
 
 /**
@@ -14,7 +14,7 @@ import { buildTestingModule } from './test-module';
  * transaction in BookingRepository.countOverlapping directly — no mock
  * would prove anything here, hence a real Postgres.
  */
-describe('booking capacity race', () => {
+describe.skipIf(!hasTestDatabase)('booking capacity race', () => {
   let moduleRef: TestingModule;
   let prisma: PrismaService;
   let bookingsService: BookingsService;
